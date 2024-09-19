@@ -7,7 +7,7 @@ export const validateNombre = (nombre: string): string | null => {
     return null;
   };
   
-  //*** saasas*/
+  //****/
   // Validar que el apellido solo contenga letras y espacios
   export const validateApellido = (apellido: string): string | null => {
     const nameRegex = /^[a-zA-Z\s]+$/;

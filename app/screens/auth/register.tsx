@@ -7,7 +7,7 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from '../../../utils/validations';
+} from '../../../utils/validation';
 import { registerUser } from '@/app/services/user.service';
 
 //**Componente para el registro de un nuevo usuario**
