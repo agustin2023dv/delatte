@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { EmailOptions } from '../interfaces/IEmailOptions';
+import { EmailOptions } from '../../../shared/interfaces/IEmailOptions';
 
 dotenv.config();
 
