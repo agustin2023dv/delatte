@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IRestaurant } from '../interfaces/IRestaurant';
+import { IRestaurant } from '../../../shared/interfaces/IRestaurant';
 
 const RestaurantSchema = new Schema<IRestaurant>({
   nombre: { type: String, required: true }, // Nombre del restaurante
@@ -18,7 +18,8 @@ const RestaurantSchema = new Schema<IRestaurant>({
   }],
   menuComida: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }],  // Relación con el modelo de menú de comidas
   menuBebidas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }], // Relación con el modelo de menú de bebidas
-  menuPostres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }]  // Relación con el modelo de menú de postres
+  menuPostres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }],  // Relación con el modelo de menú de postres
+  managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Relación con el modelo de User para los managers
 });
 
 export const Restaurant = mongoose.model<IRestaurant>('Restaurant', RestaurantSchema, "restaurantes"); // Crear el modelo de restaurante basado en el esquema
