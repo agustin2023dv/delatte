@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8081/api/users';
-
 //**Función para registrar un nuevo usuario**
 export const registerUser = async (nombre: string, apellido: string, email: string, password: string) => {
   try {

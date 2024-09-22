@@ -10,7 +10,7 @@ export default function ManagerProfile() {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text>Manager profile</Text> {/* Texto placeholder, aquí se agregará el contenido real del perfil */}
+        <Text>Manager profile</Text> 
       </View>
     </SafeAreaView>
   );
