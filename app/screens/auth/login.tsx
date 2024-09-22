@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { validateEmail, validatePassword } from '../../../utils/validation';
+import { validateEmail, validatePassword } from '../../../shared/utils/auth.validation';
 import { useAuth } from '../../contexts/AuthContext';
 import { Redirect } from 'expo-router';
 

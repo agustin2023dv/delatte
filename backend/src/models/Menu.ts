@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IMenu } from '../interfaces/IMenu';
+import { IMenu } from '../../../shared/interfaces/IMenu';
 
 const MenuSchema = new Schema<IMenu>({
   nombre: { type: String, required: true }, // Nombre del menú (ej. "Comida", "Bebidas")
