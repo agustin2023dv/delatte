@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 import { fetchUserReservations, cancelReservation, modifyReservation } from '../../../services/reservation.service'; 
 import { validateFecha, validateHorario, validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
 
@@ -8,6 +9,9 @@ const ReservationsTab = () => {
   const [pastReservations, setPastReservations] = useState([]); // Reservas pasadas
   const [loading, setLoading] = useState(true); // Estado de carga
   const [editingReservation, setEditingReservation] = useState<any | null>(null); // Reserva en edición
+
+  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para mostrar/ocultar el DatePicker
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Estado para la fecha seleccionada
 
   const screenWidth = Dimensions.get('window').width; // Ancho de la pantalla para ajustar el diseño
   const isWeb = screenWidth >= 800; 
@@ -50,7 +54,7 @@ const ReservationsTab = () => {
   const handleModifyReservation = async (reservationId: string) => {
     try {
       const updatedData = {
-        dia: editingReservation.dia,
+        dia: selectedDate.toISOString().split('T')[0], // Convertir la fecha a formato 'YYYY-MM-DD'
         horario: editingReservation.horario,
         numAdultos: editingReservation.numAdultos,
         numNinos: editingReservation.numNinos,
@@ -82,6 +86,16 @@ const ReservationsTab = () => {
   // Función para habilitar la edición de una reserva
   const handleEditReservation = (reservation: any) => {
     setEditingReservation(reservation);
+    setSelectedDate(new Date(reservation.dia)); // Configura la fecha seleccionada con la fecha de la reserva
+  };
+
+  // Función para manejar la selección de fecha en el DatePicker
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setSelectedDate(selectedDate);
+      setEditingReservation({ ...editingReservation, dia: selectedDate.toISOString().split('T')[0] });
+    }
   };
 
   // Renderizado de cada reserva
@@ -90,12 +104,16 @@ const ReservationsTab = () => {
       {/* Si esta reserva está en edición, mostrar los inputs */}
       {editingReservation?._id === item._id ? (
         <>
-          <TextInput
-            style={styles.input}
-            value={editingReservation.dia}
-            placeholder="Fecha (YYYY-MM-DD)"
-            onChangeText={text => setEditingReservation({ ...editingReservation, dia: text })}
-          />
+          <Text>{`Fecha seleccionada: ${selectedDate.toDateString()}`}</Text>
+          <Button title="Seleccionar Fecha" onPress={() => setShowDatePicker(true)} />
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />)}
           <TextInput
             style={styles.input}
             value={editingReservation.horario}
@@ -107,15 +125,13 @@ const ReservationsTab = () => {
             value={String(editingReservation.numAdultos)}
             placeholder="Adultos"
             keyboardType="numeric"
-            onChangeText={text => setEditingReservation({ ...editingReservation, numAdultos: parseInt(text) })}
-          />
+            onChangeText={text => setEditingReservation({ ...editingReservation, numAdultos: parseInt(text) })} />
           <TextInput
             style={styles.input}
             value={String(editingReservation.numNinos)}
             placeholder="Niños"
             keyboardType="numeric"
-            onChangeText={text => setEditingReservation({ ...editingReservation, numNinos: parseInt(text) })}
-          />
+            onChangeText={text => setEditingReservation({ ...editingReservation, numNinos: parseInt(text) })} />
           <Button title="Guardar Cambios" onPress={() => handleModifyReservation(item._id)} />
           <Button title="Cancelar Edición" onPress={() => setEditingReservation(null)} />
         </>
