@@ -2,10 +2,14 @@ import User from '../models/User';
 import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
 
+
+//* Servicio para OBTENER usuario por email
 export const findUserByEmailService = async (email: string) => {
   return await User.findOne({ email }); // Buscar usuario por email en la base de datos
 };
 
+
+//* Servicio para CREAR usuario
 export const registerUserService = async (nombre: string, apellido: string, email: string, hashedPassword: string) => {
   // Verificar si el usuario ya existe en la base de datos
   const existingUser = await findUserByEmailService(email);
@@ -34,7 +38,24 @@ export const registerUserService = async (nombre: string, apellido: string, emai
   }
 };
 
+//* Servicio para crear MANAGER
+export const registerManagerService = async (managerData: any) => {
+  const hashedPassword = await hashPasswordService(managerData.password);
+  
+  const newManager = new User({
+    nombre: managerData.nombre,
+    apellido: managerData.apellido,
+    email: managerData.email,
+    password: hashedPassword,
+    role: 'manager',
+  });
 
+  const savedManager = await newManager.save();
+  
+  return savedManager;
+};
+
+//* Servicio para CAMBIAR contraseña
 export const changePasswordService = async (
   userId: string,
   oldPassword: string,
