@@ -2,6 +2,7 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import AccountSettings from './account-settings';
+import ReservationsTab from './reservations-tab';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -11,6 +12,7 @@ const ProfileTabs = () => {
     <Tab.Navigator>
       {/* Pestaña de configuración de cuenta */}
       <Tab.Screen name="AccountSettings" component={AccountSettings} />
+      <Tab.Screen name='ReservationsTab' component={ReservationsTab}/>
     </Tab.Navigator>
   );
 };
