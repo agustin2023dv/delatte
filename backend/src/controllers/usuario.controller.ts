@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { findUserByEmail } from '../services/user.service';
-import { comparePassword, hashPassword } from '../services/auth.service';
-import { sendEmail } from '../services/email.service';
+import { changePasswordService, findUserByEmailService } from '../services/user.service';
+import { comparePasswordService, hashPasswordService } from '../services/auth.service';
+import { sendEmailService } from '../services/email.service';
 import User from '../models/User';
 import { randomBytes } from 'crypto';
 
@@ -12,7 +12,7 @@ export const registrarUsuarioController = async (req: Request, res: Response) =>
     const { nombre, apellido, email, password } = req.body;
 
     // Hashear la contraseña del usuario
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPasswordService(password);
 
     // Generar un token único para verificar el email
     const emailToken = randomBytes(32).toString('hex');
@@ -33,7 +33,7 @@ export const registrarUsuarioController = async (req: Request, res: Response) =>
     const verificationLink = `http://localhost:8081/api/users/verify-email?token=${emailToken}`;
 
     // Enviar el correo de verificación al usuario
-    await sendEmail({
+    await sendEmailService({
       to: email,
       subject: 'Verifica tu email',
       text: `Hola ${nombre},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace: ${verificationLink}`,
@@ -53,7 +53,7 @@ export const loginUsuarioController = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     // Buscar al usuario por email
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmailService(email);
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
@@ -64,7 +64,7 @@ export const loginUsuarioController = async (req: Request, res: Response) => {
     }
 
     // Comparar la contraseña ingresada con la almacenada
-    const isMatch = await comparePassword(password, user.password);
+    const isMatch = await comparePasswordService(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Contraseña incorrecta' });
     }
@@ -141,5 +141,32 @@ export const updateUserProfileController = async (req: Request, res: Response) =
     res.status(200).json({ message: 'Perfil actualizado con éxito', user });
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar el perfil', error });
+  }
+};
+
+
+//**Controlador para actualizar contraseña
+
+export const cambiarContrasenaController = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId; 
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    // Asegurarse de que todos los campos necesarios estén presentes
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+    }
+
+    // Invocar el servicio para cambiar la contraseña
+    const result = await changePasswordService(userId!, oldPassword, newPassword, confirmNewPassword);
+
+    // Responder con éxito si no hay errores
+    return res.status(200).json({ message: result.message });
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    if (error instanceof Error) {
+      return res.status(400).json({ message: error.message });
+    }
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
