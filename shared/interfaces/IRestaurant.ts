@@ -6,7 +6,9 @@ export interface IRestaurant extends Document {
   direccion: string; // Dirección del restaurante
   localidad: string; // Localidad donde se encuentra el restaurante
   telefonos: string[];  // Lista de teléfonos de contacto
-  emailContacto: string; // Email de contacto del restaurante
+  emailContacto: string[]; // Email de contacto del restaurante
+  logo?: string; // URL de la imagen del logo
+  galeriaFotos?: string[]; // URLs de las imágenes de la galería
   horarios: { // Lista de horarios de apertura y cierre por día
     dia: string;
     horaApertura: string;
@@ -20,4 +22,6 @@ export interface IRestaurant extends Document {
   menuBebidas: ObjectId[];  // IDs de los menús de bebidas relacionados
   menuPostres: ObjectId[];  // IDs de los menús de postres relacionados
   managers: ObjectId[]; // Managers del restaurante. Usuarios con rol {manager}
+  estaAbierto: boolean;
+  ultimaActualizacion: Date;
 }
