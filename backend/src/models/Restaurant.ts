@@ -6,7 +6,9 @@ const RestaurantSchema = new Schema<IRestaurant>({
   direccion: { type: String, required: true }, // Dirección del restaurante
   localidad: { type: String, required: true }, // Localidad o ciudad del restaurante
   telefonos: [{ type: String, required: true }], // Lista de teléfonos de contacto del restaurante
-  emailContacto: { type: String, required: true }, // Correo electrónico de contacto
+  emailContacto: [{ type: String, required: true }], // Correo electrónico de contacto
+  logo: { type: String }, // URL de la imagen del logo
+  galeriaFotos: [{ type: String }], // Array de URLs de la galería de fotos
   horarios: [{ // Lista de horarios de apertura y cierre por día
     dia: { type: String, required: true },
     horaApertura: { type: String, required: true },
@@ -19,7 +21,9 @@ const RestaurantSchema = new Schema<IRestaurant>({
   menuComida: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }],  // Relación con el modelo de menú de comidas
   menuBebidas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }], // Relación con el modelo de menú de bebidas
   menuPostres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }],  // Relación con el modelo de menú de postres
-  managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Relación con el modelo de User para los managers
+  managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Relación con el modelo de User para los managers
+  estaAbierto: { type: Boolean, default: true }, // Indica si el restaurante está operando o no
+  ultimaActualizacion: { type: Date, default: Date.now } // Fecha de la última actualización de datos
 });
 
 export const Restaurant = mongoose.model<IRestaurant>('Restaurant', RestaurantSchema, "restaurantes"); // Crear el modelo de restaurante basado en el esquema
