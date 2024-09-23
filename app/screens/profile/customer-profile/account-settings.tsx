@@ -1,13 +1,30 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Modal, TextInput, Button } from 'react-native';
 import { useAuth } from '../../../contexts/AuthContext';
+import { changePassword } from '@/app/services/user.service';
 
 //**Componente para la configuración de la cuenta del usuario**
 export default function AccountSettings() {
   const { user } = useAuth(); // Obtener el usuario autenticado del contexto
 
-  const handleChangePassword = () => {
-    Alert.alert("Cambiar Contraseña", "Función para cambiar la contraseña."); // Función de cambio de contraseña
+  // Estados para manejar el modal de cambio de contraseña
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
+  // Función para manejar el cambio de contraseña
+  const handleChangePassword = async () => {
+    try {
+      await changePassword(oldPassword, newPassword, confirmNewPassword);
+      Alert.alert('Éxito', 'La contraseña ha sido cambiada con éxito');
+      setModalVisible(false); // Cerrar el modal después del cambio exitoso
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Ocurrió un error inesperado');
+    }
   };
 
   const handleToggle2FA = () => {
@@ -44,7 +61,7 @@ export default function AccountSettings() {
       {/* Sección de seguridad */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Security</Text>
-        <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
           <Text style={styles.buttonText}>Change Password</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleToggle2FA}>
@@ -97,6 +114,41 @@ export default function AccountSettings() {
           )}
         </View>
       </View>
+
+      {/* Modal para cambiar la contraseña */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Cambiar Contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña Actual"
+            secureTextEntry
+            value={oldPassword}
+            onChangeText={setOldPassword}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Nueva Contraseña"
+            secureTextEntry
+            value={newPassword}
+            onChangeText={setNewPassword}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirmar Nueva Contraseña"
+            secureTextEntry
+            value={confirmNewPassword}
+            onChangeText={setConfirmNewPassword}
+          />
+          <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
+          <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -151,4 +203,34 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  input: {
+    width: 200,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+  },
 });
+
