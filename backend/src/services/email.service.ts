@@ -23,7 +23,7 @@ transporter.verify(function (error, success) {
   }
 });
 
-export const sendEmail = async (options: EmailOptions) => {
+export const sendEmailService = async (options: EmailOptions) => {
   // Configurar los detalles del correo electrónico
   const mailOptions = {
     from: options.from || `"Soporte" <${process.env.SMTP_USER}>`, // Usar el remitente proporcionado o el configurado por defecto
