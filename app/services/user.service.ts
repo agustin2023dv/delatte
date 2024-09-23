@@ -1,6 +1,8 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = 'http://localhost:8081/api/users';
+
 //**Función para registrar un nuevo usuario**
 export const registerUser = async (nombre: string, apellido: string, email: string, password: string) => {
   try {
@@ -61,6 +63,37 @@ export const loginUser = async (email: string, password: string) => {
       throw new Error(error.response?.data?.message || 'Error al iniciar sesión'); // Lanzar error si hay problema en la respuesta
     } else {
       throw new Error('Error inesperado'); // Error general desconocido
+    }
+  }
+};
+
+
+// **Función para cambiar la contraseña**
+export const changePassword = async (
+  oldPassword: string,
+  newPassword: string,
+  confirmNewPassword: string
+) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Obtener el token del usuario autenticado
+    const response = await axios.put(
+      `${API_URL}/change-password`,
+      {
+        oldPassword,
+        newPassword,
+        confirmNewPassword,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }, // Añadir el token en los headers
+      }
+    );
+
+    return response.data; // Retornar la respuesta del backend
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Error al cambiar la contraseña');
+    } else {
+      throw new Error('Error inesperado');
     }
   }
 };
