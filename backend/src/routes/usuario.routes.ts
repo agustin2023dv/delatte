@@ -1,5 +1,5 @@
 import express from 'express';
-import {getUserProfileController, loginUsuarioController as loginUserController, registrarUsuarioController, updateUserProfileController, verificarEmailController} from '../controllers/usuario.controller'
+import {cambiarContrasenaController, getUserProfileController, loginUsuarioController as loginUserController, registrarUsuarioController, updateUserProfileController, verificarEmailController} from '../controllers/usuario.controller'
 import {authMiddleware} from '../middlewares/auth.middleware';
 
 const router = express.Router();
@@ -9,6 +9,9 @@ router.post('/register', registrarUsuarioController);
 
 //*Ruta para verificar email
 router.get('/verify-email', verificarEmailController);
+
+//*Ruta para cambiar la contraseña
+router.put('/change-password', authMiddleware, cambiarContrasenaController);
 
 //*Ruta para hacer login 
 router.post('/login',loginUserController);
