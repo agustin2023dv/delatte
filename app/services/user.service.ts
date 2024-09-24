@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import  {jwtDecode}  from 'jwt-decode';
 
 const API_URL = 'http://localhost:8081/api/users';
 
@@ -45,28 +46,63 @@ export const verifyEmail = async (emailToken: string): Promise<{ success: boolea
   }
 };
 
-//**Función para iniciar sesión**
-export const loginUser = async (email: string, password: string) => {
+//* Función para iniciar sesión como Manager
+export const loginManager = async (email: string, password: string) => {
   try {
-    // Enviar una solicitud POST al endpoint de inicio de sesión
-    const response = await axios.post(`${API_URL}/login`, {
-      email,
-      password,
-    });
+    // Enviar la solicitud POST al backend para iniciar sesión
+    const response = await axios.post(`${API_URL}/login-manager`, { email, password });
 
-    return response.data; // Retornar los datos de la respuesta
+    const { token } = response.data;
+
+    // Decodificar el token para obtener los datos del usuario
+    const decodedUser = jwtDecode(token);
+
+    // Almacenar el token en AsyncStorage para mantener la sesión
+    await AsyncStorage.setItem('token', token);
+
+    // Retornar el usuario decodificado y el token
+    return { user: decodedUser, token };
   } catch (error: any) {
-    console.error('Error al realizar login:', error);
-
-    // Manejo de errores específicos de Axios
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Error al iniciar sesión'); // Lanzar error si hay problema en la respuesta
+      if (error.response) {
+        throw new Error(error.response.data.message || 'Error al iniciar sesión como Manager');
+      } else {
+        throw new Error('Error al conectar con el servidor');
+      }
     } else {
-      throw new Error('Error inesperado'); // Error general desconocido
+      throw new Error('Error inesperado');
     }
   }
 };
 
+//* Función para iniciar sesión como Customer
+export const loginCustomer = async (email: string, password: string) => {
+  try {
+    // Enviar la solicitud POST al backend para iniciar sesión
+    const response = await axios.post(`${API_URL}/login-customer`, { email, password });
+
+    const { token } = response.data;
+
+    // Decodificar el token para obtener los datos del usuario
+    const decodedUser = jwtDecode(token);
+
+    // Almacenar el token en AsyncStorage para mantener la sesión
+    await AsyncStorage.setItem('token', token);
+
+    // Retornar el usuario decodificado y el token
+    return { user: decodedUser, token };
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        throw new Error(error.response.data.message || 'Error al iniciar sesión como Customer');
+      } else {
+        throw new Error('Error al conectar con el servidor');
+      }
+    } else {
+      throw new Error('Error inesperado');
+    }
+  }
+};
 
 // **Función para cambiar la contraseña**
 export const changePassword = async (
