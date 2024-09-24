@@ -1,8 +1,8 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import AccountSettings from './account-settings';
-import ReservationsTab from './reservations-tab';
+import AccountSettings from './AccountSettings';
+import ReservationsTab from './ReservationsTab';
 
 const Tab = createMaterialTopTabNavigator();
 
