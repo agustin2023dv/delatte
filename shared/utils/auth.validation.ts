@@ -40,3 +40,21 @@ export const validateNombre = (nombre: string): string | null => {
     if (password !== cPassword) return "Las contraseñas no coinciden";
     return null;
   };
+
+  // Validar nombre del restaurante
+  export const validateRestaurantName = (restaurantName: string): string | null => {
+    const nameRegex = /^[a-zA-Z0-9\s]+$/; // Permitir letras, números y espacios
+    if (!restaurantName) return "El nombre del restaurante es requerido";
+    if (!nameRegex.test(restaurantName)) return "El nombre del restaurante solo puede contener letras, números y espacios";
+    if (restaurantName.length < 3) return "El nombre del restaurante debe tener al menos 3 caracteres";
+    return null;
+  };
+
+  
+  // Validar direccion del restaurante
+  export const validateRestaurantAddress = (address: string): string | null => {
+    if (!address) return "La dirección del restaurante es requerida";
+    if (address.length < 7) return "La dirección del restaurante debe tener al menos 7 caracteres";
+    return null;
+  };
+  
