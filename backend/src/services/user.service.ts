@@ -1,6 +1,7 @@
 import User from '../models/User';
 import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
+import jwt from 'jsonwebtoken';
 
 
 //* Servicio para OBTENER usuario por email
@@ -54,6 +55,60 @@ export const registerManagerService = async (managerData: any) => {
   
   return savedManager;
 };
+
+//* Servicio para login de CUSTOMER
+export const loginCustomerService = async (email: string, password: string) => {
+  const user = await User.findOne({ email });
+
+  // Verificar si el usuario existe
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  // Verificar si el rol es 'customer'
+  if (user.role !== 'customer') {
+    throw new Error('El usuario no tiene permisos para iniciar sesión como cliente');
+  }
+
+  // Verificar la contraseña
+  const isMatch = await comparePasswordService(password, user.password);
+  if (!isMatch) {
+    throw new Error('Contraseña incorrecta');
+  }
+
+  // Generar token JWT si la autenticación es correcta
+  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+
+  return { token, user };
+};
+
+//* Servicio para login de MANAGER
+export const loginManagerService = async (email: string, password: string) => {
+  const user = await User.findOne({ email });
+
+  // Verificar si el usuario existe
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  // Verificar si el rol es 'manager'
+  if (user.role !== 'manager') {
+    throw new Error('El usuario no tiene permisos para iniciar sesión como manager');
+  }
+
+  // Verificar la contraseña
+  const isMatch = await comparePasswordService(password, user.password);
+  if (!isMatch) {
+    throw new Error('Contraseña incorrecta');
+  }
+
+  // Generar token JWT si la autenticación es correcta
+  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+
+  return { token, user };
+};
+
+
 
 //* Servicio para CAMBIAR contraseña
 export const changePasswordService = async (
