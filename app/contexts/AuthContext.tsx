@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginUser, registerUser, verifyEmail as verifyEmailService } from '../services/user.service';
+import { loginCustomerService, loginManagerService, registerUser, verifyEmail as verifyEmailService } from '../services/user.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode'; 
 
 interface AuthContextProps {
   user: any; // Información del usuario autenticado
@@ -9,10 +9,12 @@ interface AuthContextProps {
   isLoading: boolean; // Indica si se está realizando una operación de autenticación
   error: string | null; // Mensaje de error si ocurre
   children: React.ReactNode;
-  login: (email: string, password: string) => Promise<void>; // Función para iniciar sesión
+  loginCustomer: (email: string, password: string) => Promise<void>; // Función para iniciar sesión como Customer
+  loginManager: (email: string, password: string) => Promise<void>; // Función para iniciar sesión como Manager
   register: (nombre: string, apellido: string, email: string, password: string) => Promise<void>; // Función para registrar un usuario
   verifyEmail: (emailToken: string) => Promise<void>; // Función para verificar el email del usuario
   logout: () => void; // Función para cerrar sesión
+  setAuthState: (data: { user: any; token: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -37,14 +39,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUserFromStorage();
   }, []);
 
-  //**Función para iniciar sesión**
-  const login = async (email: string, password: string) => {
+  //**Función para iniciar sesión como Customer**
+  const loginCustomer = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await loginUser(email, password);
-      const { token } = response;
+      const { token } = await loginCustomerService(email, password); // Cambiar a login específico de Customer
       await AsyncStorage.setItem('token', token); // Almacenar el token en el dispositivo
-      const decodedUser = jwtDecode<String>(token); // Decodificar el token
+      const decodedUser = jwtDecode(token); // Decodificar el token
+      setUser(decodedUser); // Establecer el usuario autenticado
+      setIsAuthenticated(true); // Marcar como autenticado
+    } catch (err: any) {
+      setError(err.message); // Establecer el mensaje de error
+    } finally {
+      setIsLoading(false); // Terminar el estado de carga
+    }
+  };
+
+  //**Función para iniciar sesión como Manager**
+  const loginManager = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const { token } = await loginManagerService(email, password); // Cambiar a login específico de Manager
+      await AsyncStorage.setItem('token', token); // Almacenar el token en el dispositivo
+      const decodedUser = jwtDecode(token); // Decodificar el token
       setUser(decodedUser); // Establecer el usuario autenticado
       setIsAuthenticated(true); // Marcar como autenticado
     } catch (err: any) {
@@ -74,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await verifyEmailService(emailToken);  
       if (response.success && response.token) {
         await AsyncStorage.setItem('token', response.token); // Almacenar el token de verificación
-        const decodedUser = jwtDecode<any>(response.token); // Decodificar el token
+        const decodedUser = jwtDecode(response.token); // Decodificar el token
         setUser(decodedUser); // Establecer el usuario autenticado
         setIsAuthenticated(true); // Marcar como autenticado
       } else {
@@ -94,8 +111,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(false); // Marcar como no autenticado
   };
 
+  //**Función para actualizar el estado de autenticación**
+  const setAuthState = (data: { user: any; token: string }) => {
+    setUser(data.user); // Guardamos la información del usuario en el estado del contexto.
+    setIsAuthenticated(true); // Marcamos al usuario como autenticado.
+    AsyncStorage.setItem('token', data.token); // Almacenamos el token para futuras sesiones.
+  };
+  
   return (
-    <AuthContext.Provider value={{ user, children, isAuthenticated, isLoading, error, login, register, verifyEmail, logout }}>
+    <AuthContext.Provider value={{ user, children, isAuthenticated, isLoading, error, 
+    loginCustomer, loginManager, register, verifyEmail, logout, setAuthState }}>
       {children}
     </AuthContext.Provider>
   );
