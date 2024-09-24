@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { changePasswordService, findUserByEmailService } from '../services/user.service';
-import { comparePasswordService, hashPasswordService } from '../services/auth.service';
+import { changePasswordService, loginCustomerService, loginManagerService } from '../services/user.service';
+import { hashPasswordService } from '../services/auth.service';
 import { sendEmailService } from '../services/email.service';
 import User from '../models/User';
 import { randomBytes } from 'crypto';
@@ -47,36 +46,36 @@ export const registrarUsuarioController = async (req: Request, res: Response) =>
   }
 };
 
-//**Controlador para iniciar sesión**
-export const loginUsuarioController = async (req: Request, res: Response) => {
+//**Controladores para iniciar sesión**
+
+//*Login customer
+export const loginCustomerController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar al usuario por email
-    const user = await findUserByEmailService(email);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
+    // Llamar al servicio para iniciar sesión como cliente
+    const { token, user } = await loginCustomerService(email, password);
 
-    // Verificar si el email ha sido confirmado
-    if (!user.isVerified) {
-      return res.status(403).json({ message: 'Por favor verifica tu email antes de iniciar sesión.' });
-    }
-
-    // Comparar la contraseña ingresada con la almacenada
-    const isMatch = await comparePasswordService(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Contraseña incorrecta' });
-    }
-
-    // Generar un token JWT para el usuario autenticado
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, user });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor', error: error instanceof Error ? error.message : 'Error desconocido' });
+    return res.status(400).json({ message: error instanceof Error ? error.message : 'Error al iniciar sesión' });
   }
 };
+
+//*Login manager
+export const loginManagerController = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Llamar al servicio para iniciar sesión como manager
+    const { token, user } = await loginManagerService(email, password);
+
+    return res.status(200).json({ token, user });
+  } catch (error) {
+    return res.status(400).json({ message: error instanceof Error ? error.message : 'Error al iniciar sesión' });
+  }
+};
+
 
 //**Controlador para verificar el email**
 export const verificarEmailController = async (req: Request, res: Response) => {
