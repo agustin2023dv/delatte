@@ -1,7 +1,7 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../contexts/AuthContext';
-import ProfileTabs from './profile-tabs';
+import ProfileTabs from './ProfileTabs';
 
 //**Componente de perfil del cliente**
 export default function CustomerProfile() {
