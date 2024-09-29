@@ -2,16 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../contexts/AuthContext';
+import ProfileTabs from './ProfileTabs';
 
 //**Componente de perfil del Manager**
 export default function ManagerProfile() {
-  const { user, logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
+  const { user, logout } = useAuth(); 
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <Text>Manager profile</Text> 
-      </View>
+      <ProfileTabs />
     </SafeAreaView>
   );
 }
