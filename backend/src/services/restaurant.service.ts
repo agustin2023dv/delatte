@@ -1,7 +1,6 @@
 import { IRestaurant, IRestaurantCreate } from "shared/interfaces/IRestaurant";
 import { Restaurant } from "../models/Restaurant";
-import { findUserByEmailService, registerManagerService } from "./user.service";
-import mongoose from 'mongoose';
+import { findUserByEmailService} from "./user.service";
 
 //* Servicio para obtener el restaurante del manager
 export const getRestauranteIdByManagerService = async (managerId: string) => {
