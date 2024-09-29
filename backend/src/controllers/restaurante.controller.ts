@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import {
   createRestaurantAndManagerService,
-  getRestaurantByIdService,
+  getRestaurantDetailsService,
+  getRestaurantsByManagerIdService,
   updateRestaurantService
 } from '../services/restaurant.service';
 
@@ -22,7 +23,7 @@ export const registerRestaurantAndManagerController = async (req: Request, res: 
 //* Controlador para obtener los detalles de un restaurante
 export const getRestaurantByIdController = async (req: Request, res: Response) => {
   try {
-    const restaurant = await getRestaurantByIdService(req.params.id);
+    const restaurant = await getRestaurantDetailsService(req.params.id);
     if (!restaurant) {
       return res.status(404).json({ message: 'Restaurante no encontrado' });
     }
@@ -42,5 +43,21 @@ export const updateRestaurantController = async (req: Request, res: Response) =>
     return res.status(200).json(updatedRestaurant);
   } catch (error) {
     return res.status(500).json({ message: 'Error al actualizar el restaurante', error });
+  }
+};
+
+//*Controlador para obtener restaurantes a cargo de un manager
+export const getRestaurantsByManagerIdController = async (req: Request, res: Response) => {
+  try {
+    const managerId = req.params.managerId;
+    const restaurants = await getRestaurantsByManagerIdService(managerId);
+    
+    if (!restaurants) {
+      return res.status(404).json({ message: 'No se encontraron restaurantes para este manager' });
+    }
+
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al obtener los restaurantes', error });
   }
 };
