@@ -11,6 +11,7 @@ import {
   validateRestaurantName,
   validateRestaurantAddress 
 } from '../../../../shared/utils/auth.validation';
+import { Redirect } from 'expo-router';
 
 export default function ManagerRegister() {
   const [nombre, setNombre] = useState('');
@@ -42,12 +43,14 @@ export default function ManagerRegister() {
     }
 
     try {
-      const data = await createRestaurantAndManagerService({
+       await createRestaurantAndManagerService({
         nombre: restaurantName,
         direccion: restaurantAddress,
         emailContacto: email
       }, {  nombre: nombre, apellido:apellido, email: email,password: password });
-      Alert.alert('Registro Exitoso', `Manager y Restaurante registrados con éxito.`);
+      
+      return <Redirect href="./"/>
+
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error', error.message);
