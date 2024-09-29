@@ -44,3 +44,12 @@ export const updateRestaurantService = async (restaurantId: string, updateData: 
     throw error;
   }
 };
+
+export const getManagerRestaurants = async (managerId: string) => {
+  try {
+    const response = await axios.get(`/api/restaurants/manager/${managerId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching restaurants:', error);
+    throw new Error('Error fetching restaurants');
+  }};
