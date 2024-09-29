@@ -15,3 +15,10 @@ export interface IUser extends Document {
   favorites?: ObjectId[]; // Lista de IDs de restaurantes favoritos
   role: 'customer' | 'manager' | 'superadmin'; // Rol del usuario en el sistema
 }
+
+export interface IManagerCreate {
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+}
