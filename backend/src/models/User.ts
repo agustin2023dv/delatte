@@ -2,10 +2,10 @@ import mongoose, { Schema } from 'mongoose';
 import { IUser } from '../../../shared/interfaces/IUser';
 
 const UserSchema: Schema = new Schema({
-  nombre: { type: String, required: true }, // Nombre del usuario
-  apellido: { type: String, required: true }, // Apellido del usuario
-  email: { type: String, required: true, unique: true }, // Correo único del usuario
-  password: { type: String, required: true }, // Contraseña hasheada
+  nombre: { type: String }, // Nombre del usuario
+  apellido: { type: String  }, // Apellido del usuario
+  email: { type: String,  unique: true }, // Correo único del usuario
+  password: { type: String }, // Contraseña hasheada
   isVerified: { type: Boolean, default: false }, // Indicador de si el email del usuario ha sido verificado
   emailToken: { type: String }, // Token de verificación de email
   dob: { type: Date }, // Fecha de nacimiento del usuario
