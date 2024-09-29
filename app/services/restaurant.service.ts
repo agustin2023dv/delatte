@@ -1,17 +1,14 @@
 import axios from 'axios';
+import {IManagerCreate} from 'shared/interfaces/IUser';
+import { IRestaurantCreate } from 'shared/interfaces/IRestaurant';
 
-// Configuración de la instancia base de Axios
-const api = axios.create({
-  baseURL: 'http://localhost:8081/api/restaurantes',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const API_URL = 'http://localhost:8081/api/restaurantes';
+
 
 // Llamada para crear el manager y el restaurante
-export const createRestaurantAndManagerService = async (restaurantData: any, managerData: any) => {
+export const createRestaurantAndManagerService = async (restaurantData: IRestaurantCreate, managerData: IManagerCreate) => {
   try {
-    const response = await api.post('/register-restaurant', {
+    const response = await axios.post(`${API_URL}/register-restaurant`,{
       restaurant: restaurantData,
       manager: managerData,
     });
@@ -26,7 +23,7 @@ export const createRestaurantAndManagerService = async (restaurantData: any, man
 // Llamada para obtener información de un restaurante por ID
 export const getRestaurantByIdService = async (restaurantId: string) => {
   try {
-    const response = await api.get(`/${restaurantId}`);
+    const response = await axios.get(`${API_URL}/${restaurantId}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener restaurante por ID:', error);
@@ -37,7 +34,7 @@ export const getRestaurantByIdService = async (restaurantId: string) => {
 // Llamada para actualizar la información del restaurante
 export const updateRestaurantService = async (restaurantId: string, updateData: any) => {
   try {
-    const response = await api.put(`/${restaurantId}`, updateData);
+    const response = await axios.put( `${API_URL}/${restaurantId}`, updateData);
     return response.data;
   } catch (error) {
     console.error('Error al actualizar el restaurante:', error);
@@ -45,9 +42,9 @@ export const updateRestaurantService = async (restaurantId: string, updateData: 
   }
 };
 
-export const getManagerRestaurants = async (managerId: string) => {
+export const getRestaurantsByManagerService = async (managerId: string) => {
   try {
-    const response = await axios.get(`/api/restaurants/manager/${managerId}`);
+    const response = await axios.get(`${API_URL}/register/manager/${managerId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching restaurants:', error);
