@@ -7,10 +7,9 @@ export default function HomeLayout() {
     <AuthProvider>
       {/* Configuración de navegación entre pantallas */}
       <Stack screenOptions={{ headerShown: false }}>
-        
         {/* Definición de las pantallas disponibles en el stack */}
-        <Stack.Screen name="index" />
-        <Stack.Screen name="screens/auth/login" />
+        <Stack.Screen name="index"/>
+        <Stack.Screen name="screens/auth/login"/>
         <Stack.Screen name="screens/auth/register" />
         <Stack.Screen name="screens/auth/verify-email" />
       </Stack>
