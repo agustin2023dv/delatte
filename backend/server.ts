@@ -1,5 +1,7 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import usuarioRoutes from './src/routes/usuario.routes';
+import restaurantRoutes from './src/routes/restaurante.routes';
+import reservationRoutes from './src/routes/reserva.routes';
 import { connectDB } from './db';
 import cors from 'cors';
 
@@ -21,6 +23,10 @@ app.use(cors()); // Habilitar CORS para aceptar solicitudes desde otros dominios
 app.use(express.json()); // Permitir recibir solicitudes en formato JSON
 
 app.use('/api/users', usuarioRoutes); // Usar las rutas definidas para usuarios bajo el endpoint /api/users
+
+app.use('/api/restaurantes', restaurantRoutes); // Usar las rutas definidas para usuarios bajo el endpoint /api/restaurantes
+
+app.use('/api/reservas', reservationRoutes); // Usar las rutas definidas para usuarios bajo el endpoint /api/users
 
 app.listen(port, () => {
   // Confirmar que el servidor está corriendo y en qué puerto
