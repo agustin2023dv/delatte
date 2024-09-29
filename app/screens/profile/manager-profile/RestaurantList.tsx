@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Button } from 'react-native';
 import { IRestaurant } from '../../../../shared/interfaces/IRestaurant'; 
 import { getRestaurantsByManagerService } from '@/app/services/restaurant.service'; 
 import { useAuth } from '../../../contexts/AuthContext'; 
@@ -28,8 +28,11 @@ export default function RestaurantList() {
     }
   }, [user]);
 
+  const handleUpdateRestaurant = async()=> {
+    
+  }
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {isLoading ? (
         <Text>Cargando restaurantes...</Text>
       ) : (
@@ -38,10 +41,11 @@ export default function RestaurantList() {
             <Text style={styles.restaurantName}>{restaurant.nombre}</Text>
             <Text style={styles.restaurantDetails}>Dirección: {restaurant.direccion}</Text>
             <Text style={styles.restaurantDetails}>Capacidad: {restaurant.capacidadMesas?.length} mesas</Text>
+            <Button title="Editar" onPress={handleUpdateRestaurant}/>
           </View>
         ))
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
