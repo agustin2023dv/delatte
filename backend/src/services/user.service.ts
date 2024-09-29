@@ -2,6 +2,7 @@ import User from '../models/User';
 import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
+import { IManagerCreate } from 'shared/interfaces/IUser';
 
 
 //* Servicio para OBTENER usuario por email
@@ -40,20 +41,29 @@ export const registerUserService = async (nombre: string, apellido: string, emai
 };
 
 //* Servicio para crear MANAGER
-export const registerManagerService = async (managerData: any) => {
-  const hashedPassword = await hashPasswordService(managerData.password);
-  
-  const newManager = new User({
-    nombre: managerData.nombre,
-    apellido: managerData.apellido,
-    email: managerData.email,
-    password: hashedPassword,
-    role: 'manager',
-  });
+export const registerManagerService = async (managerData:IManagerCreate) => {
 
-  const savedManager = await newManager.save();
-  
-  return savedManager;
+   // Crear un nuevo usuario con el token de verificación de email
+   const newUserManager = new User({
+     ...managerData,
+     nombre: managerData.nombre,
+     apellido: managerData.apellido,
+     email: managerData.email,
+     password: managerData.password,
+     emailToken: crypto.randomBytes(64).toString("hex"), // Generar un token único para la verificación del email
+     role: 'manager'
+   });
+   console.log('Guardando nuevo usuario:', newUserManager);
+ 
+   try {
+     // Guardar el usuario en la base de datos
+     const savedUser = await newUserManager.save();
+     console.log('Usuario guardado:', savedUser);
+     return savedUser; // Devolver el usuario guardado
+   } catch (error) {
+     console.error('Error al guardar el usuario:', error);
+     throw error; // Lanzar error si ocurre algún problema al guardar
+   }
 };
 
 //* Servicio para login de CUSTOMER
