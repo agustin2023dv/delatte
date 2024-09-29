@@ -6,6 +6,7 @@ import {
   updateRestaurantService
 } from '../services/restaurant.service';
 import { registerManagerService } from '../services/user.service';
+import { hashPasswordService } from '../services/auth.service';
 
 //* Controlador para crear un nuevo restaurante y manager
 export const registerRestaurantAndManagerController = async (req: Request, res: Response) => {
@@ -13,12 +14,17 @@ export const registerRestaurantAndManagerController = async (req: Request, res: 
     console.log('Datos recibidos en el controlador:', req.body); 
     const restaurantData = req.body.restaurant;
     const managerData = req.body.manager;
+
+    // Hashear la contraseña del usuario
+    const hashedPassword = await hashPasswordService(req.body.manager.password);
+    req.body.manager.password = hashedPassword;
     console.log('Restaurant details: ', restaurantData);
     console.log('Manager: ', managerData);
     
     const savedManager=  await registerManagerService(managerData);
     const savedRestaurant= await registerRestaurantService(restaurantData);
 
+    
     return res.status(201).json({ savedRestaurant, savedManager });
   } catch (error) {
     return res.status(500).json({ message: 'ERROR xxx', error: error instanceof Error ? error.message : 'Error desconocido' });
