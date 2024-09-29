@@ -27,16 +27,6 @@ export const createRestaurantService = async (restaurantData: IRestaurant, manag
   }
 };
 
-//** Servicio para obtener los detalles de un restaurante por ID
-export const getRestaurantByIdService = async (id: string) => {
-  try {
-    const restaurant = await Restaurant.findById(id).populate('managers');
-    return restaurant;
-  } catch (error) {
-    throw new Error('Error al obtener el restaurante');
-  }
-};
-
 //** Servicio para actualizar un restaurante por ID
 export const updateRestaurantService = async (id: string, updateData: Partial<IRestaurant>) => {
   try {
@@ -71,5 +61,39 @@ export const createRestaurantAndManagerService = async (restaurantData: IRestaur
     await session.abortTransaction();
     session.endSession();
     throw new Error('Error al crear restaurante y manager');
+  }
+};
+
+
+// ** Servicio para obtener todos los detalles de un restaurante por ID
+export const getRestaurantDetailsService = async (restaurantId: string) => {
+  try {
+    const restaurant = await Restaurant.findById(restaurantId)
+      .populate('managers')
+      .populate('menuComida')
+      .populate('menuBebidas')
+      .populate('menuPostres');
+
+    if (!restaurant) {
+      throw new Error('Restaurante no encontrado');
+    }
+
+    if (!restaurant.menuComida || !restaurant.menuBebidas || !restaurant.menuPostres) {
+      throw new Error('Algunos menús del restaurante no se pudieron encontrar');
+    }
+
+    return restaurant;
+  } catch (error) {
+    throw new Error('Error al obtener los detalles del restaurante');
+  }
+};
+
+//*
+export const getRestaurantsByManagerIdService = async (managerId: string) => {
+  try {
+    const restaurants = await Restaurant.find({ managers: managerId }).populate('managers'); // Esto buscará todos los restaurantes donde el manager está en el array de managers
+    return restaurants;
+  } catch (error) {
+    throw new Error('Error al obtener los restaurantes del manager');
   }
 };
