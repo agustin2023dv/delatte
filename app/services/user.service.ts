@@ -47,7 +47,7 @@ export const verifyEmail = async (emailToken: string): Promise<{ success: boolea
 };
 
 //* Función para iniciar sesión como Manager
-export const loginManager = async (email: string, password: string) => {
+export const loginManagerService = async (email: string, password: string) => {
   try {
     // Enviar la solicitud POST al backend para iniciar sesión
     const response = await axios.post(`${API_URL}/login-manager`, { email, password });
@@ -76,7 +76,7 @@ export const loginManager = async (email: string, password: string) => {
 };
 
 //* Función para iniciar sesión como Customer
-export const loginCustomer = async (email: string, password: string) => {
+export const loginCustomerService = async (email: string, password: string) => {
   try {
     // Enviar la solicitud POST al backend para iniciar sesión
     const response = await axios.post(`${API_URL}/login-customer`, { email, password });
