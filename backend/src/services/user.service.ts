@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
 import { IManagerCreate } from 'shared/interfaces/IUser';
+import { sendEmailService } from './email.service';
 
 
 //* Servicio para OBTENER usuario por email
@@ -32,6 +33,7 @@ export const registerUserService = async (nombre: string, apellido: string, emai
   try {
     // Guardar el usuario en la base de datos
     const savedUser = await newUser.save();
+
     console.log('Usuario guardado:', savedUser);
     return savedUser; // Devolver el usuario guardado
   } catch (error) {
@@ -43,27 +45,38 @@ export const registerUserService = async (nombre: string, apellido: string, emai
 //* Servicio para crear MANAGER
 export const registerManagerService = async (managerData:IManagerCreate) => {
 
-   // Crear un nuevo usuario con el token de verificación de email
-   const newUserManager = new User({
-     ...managerData,
-     nombre: managerData.nombre,
-     apellido: managerData.apellido,
-     email: managerData.email,
-     password: managerData.password,
-     emailToken: crypto.randomBytes(64).toString("hex"), // Generar un token único para la verificación del email
-     role: 'manager'
-   });
-   console.log('Guardando nuevo usuario:', newUserManager);
- 
-   try {
-     // Guardar el usuario en la base de datos
-     const savedUser = await newUserManager.save();
-     console.log('Usuario guardado:', savedUser);
-     return savedUser; // Devolver el usuario guardado
-   } catch (error) {
-     console.error('Error al guardar el usuario:', error);
-     throw error; // Lanzar error si ocurre algún problema al guardar
-   }
+  // Crear un nuevo usuario con el token de verificación de email
+  const newUserManager = new User({
+    ...managerData,
+    nombre: managerData.nombre,
+    apellido: managerData.apellido,
+    email: managerData.email,
+    password: managerData.password,
+    emailToken: crypto.randomBytes(64).toString("hex"), // Generar un token único para la verificación del email
+    role: 'manager'
+  });
+  console.log('Guardando nuevo usuario:', newUserManager);
+
+  try {
+    // Guardar el usuario en la base de datos
+    const savedUser = await newUserManager.save();
+      // Generar el link de verificación de email
+      const verificationLink = `http://localhost:8081/api/users/verify-email?token=${newUserManager.emailToken}`;
+
+      // Enviar el correo de verificación al usuario
+      await sendEmailService({
+        to: managerData.email,
+        subject: 'Verifica tu email',
+        text: `Hola ${managerData.nombre},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace: ${verificationLink}`,
+        html: `<h1>Hola ${managerData.nombre}!</h1><p>Por favor verifica tu cuenta haciendo clic en el siguiente enlace:</p><a href="${verificationLink}">Verificar Email</a>`,
+      });
+
+    console.log('Usuario guardado:', savedUser);
+    return savedUser; // Devolver el usuario guardado
+  } catch (error) {
+    console.error('Error al guardar el usuario:', error);
+    throw error; // Lanzar error si ocurre algún problema al guardar
+  }
 };
 
 //* Servicio para login de CUSTOMER
@@ -153,3 +166,7 @@ export const changePasswordService = async (
 
   return { message: 'Contraseña actualizada correctamente' };
 };
+
+function sendVerificationEmail(nombre: string, email: string, emailToken: string | null) {
+  throw new Error('Function not implemented.');
+}
