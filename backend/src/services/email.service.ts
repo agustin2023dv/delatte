@@ -42,3 +42,22 @@ export const sendEmailService = async (options: EmailOptions) => {
     throw error; // Lanzar error si falla el envío del correo
   }
 };
+
+export const sendVerificationEmailService = async (nombre: string, email: string, emailToken: string) => {
+  try {
+    // Generar el link de verificación de email
+    const verificationLink = `http://localhost:8081/api/users/verify-email?token=${emailToken}`;
+
+    // Enviar el correo de verificación al usuario
+    await sendEmailService({
+      to: email,
+      subject: 'Verifica tu email',
+      text: `Hola ${nombre},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace: ${verificationLink}`,
+      html: `<h1>Hola ${nombre}!</h1><p>Por favor verifica tu cuenta haciendo clic en el siguiente enlace:</p><a href="${verificationLink}">Verificar Email</a>`,
+    });
+  } catch (error) {
+    console.error('Error al enviar el correo de verificación:', error);
+    throw new Error('Error al enviar el correo de verificación');
+  }
+};
+
