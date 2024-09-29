@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Restaurant } from '../models/Restaurant';
 
-// Middleware para verificar si el usuario es el manager del restaurante
+/* Middleware para verificar si el usuario es el manager del restaurante
 export const managerOfRestaurantMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const user = (req as any).user; // Usuario ya autenticado por authMiddleware
 
@@ -23,4 +23,4 @@ export const managerOfRestaurantMiddleware = async (req: Request, res: Response,
   } catch (error) {
     return res.status(500).json({ message: 'Error al verificar el manager del restaurante', error });
   }
-};
+};*/
