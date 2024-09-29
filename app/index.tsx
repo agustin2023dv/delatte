@@ -2,7 +2,7 @@ import { Text, View } from "react-native";
 import { Link } from "expo-router";
 
 // Componente principal que muestra enlaces de navegación
-export default function Index() {
+export default function Home() {
   return (
     <View>
       {/* Enlace para navegar a la pantalla de login */}
