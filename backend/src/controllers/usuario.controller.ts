@@ -148,7 +148,7 @@ export const updateUserProfileController = async (req: Request, res: Response) =
 
 export const cambiarContrasenaController = async (req: Request, res: Response) => {
   try {
-    const userId = req.userId; 
+    const userId = (req as any).user.id;
     const { oldPassword, newPassword, confirmNewPassword } = req.body;
 
     // Asegurarse de que todos los campos necesarios estén presentes
