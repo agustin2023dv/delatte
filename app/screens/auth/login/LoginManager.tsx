@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateEmail, validatePassword } from '../../../../shared/utils/auth.validation';
-import { loginManager } from '@/app/services/user.service';
+import { loginManagerService } from '@/app/services/user.service';
 import { Redirect } from 'expo-router';
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function LoginManager() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [redirectToHome, setRedirectToHome] = useState(false);
   const { setAuthState } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,9 +25,9 @@ export default function LoginManager() {
 
     try {
       setIsLoading(true);
-      const data = await loginManager(email, password); // Llamada a la API a través del servicio
+      const data = await loginManagerService(email, password); // Llamada a la API a través del servicio
       setAuthState(data); // Actualiza el estado de autenticación en el contexto
-      setRedirectToHome(true); // Redirige al home después del login
+      return <Redirect href='/'/>; // Redirige al home después del login
     } catch (err) {
       setError('Error al iniciar sesión como Manager.');
     } finally {
@@ -36,9 +35,6 @@ export default function LoginManager() {
     }
   };
 
-  if (redirectToHome) {
-    return <Redirect href="../" />;
-  }
 
   return (
     <SafeAreaView style={styles.safeContainer}>
