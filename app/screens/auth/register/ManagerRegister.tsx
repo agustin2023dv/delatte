@@ -32,9 +32,11 @@ export default function ManagerRegister() {
     const restaurantNameError = validateRestaurantName(restaurantName);
     const restaurantAddressError = validateRestaurantAddress(restaurantAddress);
 
-    if (nombreError || apellidoError || emailError || passwordError || cPasswordError || restaurantNameError || restaurantAddressError) {
+    if (nombreError || apellidoError || emailError || passwordError || cPasswordError || restaurantNameError 
+      || restaurantAddressError) {
       Alert.alert('Errores en el formulario', 
-        `${nombreError || ''}\n${apellidoError || ''}\n${emailError || ''}\n${passwordError || ''}\n${cPasswordError || ''}\n${restaurantNameError || ''}\n${restaurantAddressError || ''}`
+        `${nombreError || ''}\n${apellidoError || ''}\n${emailError || ''}\n${passwordError || ''}\n${cPasswordError 
+          || ''}\n${restaurantNameError || ''}\n${restaurantAddressError || ''}`
       );
       return;
     }
@@ -44,7 +46,7 @@ export default function ManagerRegister() {
         nombre: restaurantName,
         direccion: restaurantAddress,
         emailContacto: email
-      }, { nombre, apellido, email, password });
+      }, {  nombre: nombre, apellido:apellido, email: email,password: password });
       Alert.alert('Registro Exitoso', `Manager y Restaurante registrados con éxito.`);
     } catch (error) {
       if (error instanceof Error) {
@@ -58,7 +60,7 @@ export default function ManagerRegister() {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Regístrate como Manager</Text>
+        <Text style={styles.title}>Regístra tu negocio</Text>
         {/* Campos de registro de manager */}
         <TextInput style={styles.input} placeholder="Nombre" value={nombre} onChangeText={setNombre} />
         <TextInput style={styles.input} placeholder="Apellido" value={apellido} onChangeText={setApellido} />
