@@ -9,9 +9,9 @@ export default function HomeLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         {/* Definición de las pantallas disponibles en el stack */}
         <Stack.Screen name="index"/>
-        <Stack.Screen name="screens/auth/login"/>
-        <Stack.Screen name="screens/auth/register" />
-        <Stack.Screen name="screens/auth/verify-email" />
+        <Stack.Screen name="screens/auth/login/Login"/>
+        <Stack.Screen name="screens/auth/register/Register" />
+        <Stack.Screen name="screens/auth/VerifyEmail" />
       </Stack>
     </AuthProvider>
   );
