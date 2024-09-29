@@ -1,6 +1,6 @@
-import { IRestaurant } from "shared/interfaces/IRestaurant";
+import { IRestaurant, IRestaurantCreate } from "shared/interfaces/IRestaurant";
 import { Restaurant } from "../models/Restaurant";
-import { registerManagerService } from "./user.service";
+import { findUserByEmailService, registerManagerService } from "./user.service";
 import mongoose from 'mongoose';
 
 //* Servicio para obtener el restaurante del manager
@@ -13,20 +13,6 @@ export const getRestauranteIdByManagerService = async (managerId: string) => {
   }
 };
 
-//* Servicio para crear un nuevo restaurante
-export const createRestaurantService = async (restaurantData: IRestaurant, managerId: mongoose.Types.ObjectId) => {
-  try {
-    const newRestaurant = new Restaurant({
-      ...restaurantData,
-      managers: [managerId], // Relación del restaurante con el manager
-    });
-
-    return await newRestaurant.save();
-  } catch (error) {
-    throw new Error('Error al crear el restaurante');
-  }
-};
-
 //** Servicio para actualizar un restaurante por ID
 export const updateRestaurantService = async (id: string, updateData: Partial<IRestaurant>) => {
   try {
@@ -36,33 +22,33 @@ export const updateRestaurantService = async (id: string, updateData: Partial<IR
   }
 };
 
-//** Servicio para crear restaurante y manager en una transacción
-export const createRestaurantAndManagerService = async (restaurantData: IRestaurant, managerData: any) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+//** Servicio para crear restaurante
+export const registerRestaurantService = async(restaurantData:IRestaurantCreate)=>{
 
-  try {
-    // Reutilizamos el servicio de registro de manager
-    const savedManager = await registerManagerService(managerData);
-
-    // Crear el restaurante con el manager
+  const email = restaurantData.emailContacto;
+  const existingUser = await findUserByEmailService(email);
+  
+  console.log(existingUser);
+  
+  try{
+    
     const newRestaurant = new Restaurant({
-      ...restaurantData,
-      managers: [savedManager._id],
-    });
+    ...restaurantData,
+    nombre:restaurantData.nombre,
+    emailContacto: restaurantData.emailContacto,
+    direccion: restaurantData.direccion,
+    managers: existingUser?.id     });
 
-    const savedRestaurant = await newRestaurant.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
-
-    return { savedRestaurant, savedManager };
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    throw new Error('Error al crear restaurante y manager');
-  }
-};
+    const savedRestaurant = await newRestaurant.save();
+    console.log('Restaurant guardado:', savedRestaurant);
+    return savedRestaurant;
+}
+catch(error){
+  console.error('Error al guardar el restaurant:', error);
+     throw error; 
+}
+  
+}
 
 
 // ** Servicio para obtener todos los detalles de un restaurante por ID
