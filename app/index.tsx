@@ -1,7 +1,8 @@
-import { Button, Text, View } from "react-native";
+import {  Text, View } from "react-native";
 import { Link } from "expo-router";
 import { useAuth } from "./contexts/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LogOutButton from "components/buttons/LogOutButton";
 
 // Componente principal que muestra enlaces de navegación
 export default function Home() {
@@ -12,7 +13,7 @@ export default function Home() {
     return(<>
       <SafeAreaView>
         <Text>ok</Text>
-        <Button title="Log out"/>
+        <LogOutButton/>
       </SafeAreaView>
     
     </>)
