@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginCustomerService, loginManagerService, registerUser, verifyEmail as verifyEmailService } from '../services/user.service';
+import { loginCustomerService, loginManagerService, registerUser, 
+  verifyEmail as verifyEmailService } from '../services/user.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; 
 
