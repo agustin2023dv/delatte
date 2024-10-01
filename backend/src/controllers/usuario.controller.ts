@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import { changePasswordService, loginCustomerService, loginManagerService } from '../services/user.service';
+import { changePasswordService, getUserDataService, loginCustomerService, loginManagerService, registerUserService, updateUserDataService } from '../services/user.service';
 import { hashPasswordService } from '../services/auth.service';
 import { sendEmailService } from '../services/email.service';
 import User from '../models/User';
-import { randomBytes } from 'crypto';
 
 //**Controlador para registrar un nuevo usuario**
 export const registrarUsuarioController = async (req: Request, res: Response) => {
@@ -13,23 +12,11 @@ export const registrarUsuarioController = async (req: Request, res: Response) =>
     // Hashear la contraseña del usuario
     const hashedPassword = await hashPasswordService(password);
 
-    // Generar un token único para verificar el email
-    const emailToken = randomBytes(32).toString('hex');
-
-    // Crear y guardar el nuevo usuario en la base de datos
-    const newUser = new User({
-      nombre,
-      apellido,
-      email,
-      password: hashedPassword,
-      isVerified: false,
-      emailToken: emailToken,
-    });
-
-    await newUser.save();
+    // Registrar el nuevo usuario (la lógica está en el servicio)
+    const newUser = await registerUserService(nombre, apellido, email, hashedPassword);
 
     // Generar el link de verificación de email
-    const verificationLink = `http://localhost:8081/api/users/verify-email?token=${emailToken}`;
+    const verificationLink = `http://localhost:8081/api/users/verify-email?token=${newUser.emailToken}`;
 
     // Enviar el correo de verificación al usuario
     await sendEmailService({
@@ -110,8 +97,8 @@ export const getUserProfileController = async (req: Request, res: Response) => {
     // Obtener el ID del usuario desde el token
     const userId = (req as any).user.id;
 
-    // Buscar al usuario por su ID
-    const user = await User.findById(userId).select('-password -emailToken');
+    // Llamar al servicio para obtener los datos del usuario
+    const user = await getUserDataService(userId);
 
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -125,21 +112,23 @@ export const getUserProfileController = async (req: Request, res: Response) => {
 };
 
 //**Controlador para actualizar el perfil del usuario**
-export const updateUserProfileController = async (req: Request, res: Response) => {
+export const updateUserDataController = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user; // Usuario autenticado
-    const { dob, telefono, direccion } = req.body;
+    // Obtener los datos actualizados del usuario desde el cuerpo de la solicitud
+    const userData = req.body;
 
-    // Actualizar solo los campos permitidos
-    user.dob = dob || user.dob;
-    user.telefono = telefono || user.telefono;
-    user.direccion = direccion || user.direccion;
+    // Ejecutar el servicio para actualizar los datos del usuario
+    const updatedUser = await updateUserDataService(userData);
 
-    await user.save();
-
-    res.status(200).json({ message: 'Perfil actualizado con éxito', user });
+    return res.status(200).json({
+      message: 'Datos del usuario actualizados con éxito',
+      user: updatedUser
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el perfil', error });
+    return res.status(500).json({
+      message: 'Error al actualizar los datos del usuario',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 };
 
