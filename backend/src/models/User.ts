@@ -8,10 +8,10 @@ const UserSchema: Schema = new Schema({
   password: { type: String }, // Contraseña hasheada
   isVerified: { type: Boolean, default: false }, // Indicador de si el email del usuario ha sido verificado
   emailToken: { type: String }, // Token de verificación de email
-  dob: { type: Date }, // Fecha de nacimiento del usuario
-  phone: { type: String }, // Número de teléfono del usuario
-  addresses: { type: [String] }, // Lista de domicilios del usuario
-  profileImage: { type: String }, // URL de la imagen de perfil del usuario
+  dob: { type: Date , default: null}, // Fecha de nacimiento del usuario
+  phone: { type: String, default: "No especificado"}, // Número de teléfono del usuario
+  address: { type: String }, // Lista de domicilios del usuario
+  profileImage: { type: String, default: "Imagen de perfil" }, // URL de la imagen de perfil del usuario
   role: { type: String, enum: ['customer', 'manager', 'superadmin'], default: 'customer' }, // Rol del usuario, con valor por defecto 'customer'
 });
 
