@@ -4,10 +4,10 @@ import { IRestaurant } from '../../../shared/interfaces/IRestaurant';
 const RestaurantSchema = new Schema<IRestaurant>({
   nombre: { type: String }, // Nombre del restaurante
   direccion: { type: String }, // Dirección del restaurante
-  localidad: { type: String }, // Localidad o ciudad del restaurante
+  localidad: { type: String, default: 'Montevideo' }, // Localidad o ciudad del restaurante
   telefonos: [{ type: String }], // Lista de teléfonos de contacto del restaurante
   emailContacto: { type: String }, // Correo electrónico de contacto
-  logo: { type: String }, // URL de la imagen del logo
+  logo: { type: String , default:'Logo restaurante' }, // URL de la imagen del logo
   galeriaFotos: [{ type: String }], // Array de URLs de la galería de fotos
   horarios: [{ // Lista de horarios de apertura y cierre por día
     dia: { type: String},
@@ -15,8 +15,8 @@ const RestaurantSchema = new Schema<IRestaurant>({
     horaCierre: { type: String }
   }],
   capacidadMesas: [{ // Capacidad del restaurante, definido por mesas y personas por mesa
-    cantidad: { type: Number },
-    personasPorMesa: { type: Number }
+    cantidad: { type: Number, default:1 },
+    personasPorMesa: { type: Number, default:2 }
   }],
   menuComida: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }],  // Relación con el modelo de menú de comidas
   menuBebidas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu' }], // Relación con el modelo de menú de bebidas
