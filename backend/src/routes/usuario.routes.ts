@@ -1,5 +1,6 @@
 import express from 'express';
-import {cambiarContrasenaController, getUserProfileController, loginCustomerController,loginManagerController, registrarUsuarioController, updateUserProfileController, verificarEmailController} from '../controllers/usuario.controller'
+import {cambiarContrasenaController, getUserProfileController, loginCustomerController,loginManagerController, registrarUsuarioController,
+     updateUserDataController, verificarEmailController} from '../controllers/usuario.controller'
 import {authMiddleware} from '../middlewares/auth.middleware';
 import { loginRateLimiter } from '../middlewares/rateLimiter.middlware';
 
@@ -24,6 +25,6 @@ router.post('/login-manager',loginRateLimiter, loginManagerController);
 router.get('/profile', authMiddleware, getUserProfileController);
 
 //*Ruta para actualizar el perfil del usuario (PUT)
-router.put('/profile', authMiddleware, updateUserProfileController);
+router.put('/profile', authMiddleware, updateUserDataController);
 
 export default router;
