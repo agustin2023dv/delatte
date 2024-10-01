@@ -2,7 +2,7 @@ import User from '../models/User';
 import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
-import { IManagerCreate } from 'shared/interfaces/IUser';
+import { IManagerCreate, IUser, IUserEdit } from 'shared/interfaces/IUser';
 import { sendEmailService } from './email.service';
 
 
@@ -26,14 +26,14 @@ export const registerUserService = async (nombre: string, apellido: string, emai
     apellido,
     email,
     password: hashedPassword,
-    emailToken: crypto.randomBytes(64).toString("hex"), // Generar un token único para la verificación del email
+    emailToken: crypto.randomBytes(64).toString('hex'), // Generar un token único para la verificación del email
+    isVerified: false // Asegurarse de que el usuario no está verificado inicialmente
   });
   console.log('Guardando nuevo usuario:', newUser);
 
   try {
     // Guardar el usuario en la base de datos
     const savedUser = await newUser.save();
-
     console.log('Usuario guardado:', savedUser);
     return savedUser; // Devolver el usuario guardado
   } catch (error) {
@@ -167,6 +167,44 @@ export const changePasswordService = async (
   return { message: 'Contraseña actualizada correctamente' };
 };
 
-function sendVerificationEmail(nombre: string, email: string, emailToken: string | null) {
-  throw new Error('Function not implemented.');
-}
+//**Servicio para obtener los datos del usuario**
+export const getUserDataService = async (userId: string) => {
+  try {
+    // Realizar la consulta a la base de datos para obtener al usuario, excluyendo ciertos campos
+    const user = await User.findById(userId).select('-password -emailToken -isVerified');
+    return user;
+  } catch (error) {
+    console.error('Error obteniendo datos del usuario:', error);
+    throw new Error('Error al obtener los datos del usuario');
+  }
+};
+
+// Servicio para actualizar los datos del usuario
+export const updateUserDataService = async (userData: IUserEdit) => {
+  try {
+    // Buscar el usuario por su email 
+    const user = await User.findOne({ email: userData.email });
+
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    // Actualizar solo los campos permitidos
+    user.phone = userData.phone || user.phone;
+    user.address = userData.address || user.address;
+    user.profileImage = userData.profileImage || user.profileImage;
+
+    // Condición especial: La fecha de nacimiento solo puede ser modificada una vez
+    if (!user.dob && userData.dob) {
+      user.dob = userData.dob;
+    }
+
+    // Guardar los cambios en la base de datos
+    const updatedUser = await user.save();
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Error al actualizar los datos del usuario:', error);
+    throw error;
+  }
+};
