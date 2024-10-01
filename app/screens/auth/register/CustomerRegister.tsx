@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerUser } from '@/app/services/user.service';
+import { registerUserService } from '@/app/services/user.service';
 import { validateNombre, validateApellido, validateEmail, validatePassword, validateConfirmPassword } from '../../../../shared/utils/auth.validation';
 
 export default function CustomerRegister() {
@@ -24,7 +24,7 @@ export default function CustomerRegister() {
     }
 
     try {
-      const data = await registerUser(nombre, apellido, email, password);
+      const data = await registerUserService(nombre, apellido, email, password);
       Alert.alert('Registro Exitoso', `Usuario registrado con éxito: ${data.user.nombre}`);
     } catch (error) {
       if (error instanceof Error) {
