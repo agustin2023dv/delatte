@@ -1,11 +1,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  {jwtDecode}  from 'jwt-decode';
+import { IUser, IUserEdit } from 'shared/interfaces/IUser';
 
 const API_URL = 'http://localhost:8081/api/users';
 
 //**Función para registrar un nuevo usuario**
-export const registerUser = async (nombre: string, apellido: string, email: string, password: string) => {
+export const registerUserService = async (nombre: string, apellido: string, email: string, password: string) => {
   try {
     // Enviar una solicitud POST al endpoint de registro de usuarios
     const response = await axios.post(`${API_URL}/register`, {
@@ -128,6 +129,59 @@ export const changePassword = async (
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message || 'Error al cambiar la contraseña');
+    } else {
+      throw new Error('Error inesperado');
+    }
+  }
+};
+
+// **Función para obtener datos de usuario**
+export const fetchUserDataService = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token'); 
+
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    // Realizar la solicitud con el token en el encabezado Authorization
+    const response = await axios.get(`${API_URL}/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}` // Agregar el token en el encabezado Authorization
+      }
+    });
+    
+    return response.data; 
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Error en la solicitud');
+    } else {
+      throw new Error('Error inesperado');
+    }
+  }
+};
+
+// **Función para cambiar datos de usuario**
+
+export const updateUserDataService = async (updatedData: IUserEdit) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    // Realizar la solicitud con el token en el encabezado Authorization
+    const response = await axios.put(`${API_URL}/profile`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}` 
+      }
+    });
+
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Error en la solicitud');
     } else {
       throw new Error('Error inesperado');
     }
