@@ -16,19 +16,5 @@ export interface IUser extends Document {
   role: 'customer' | 'manager' | 'superadmin'; // Rol del usuario en el sistema
 }
  
-export interface IUserEdit  {
-  email?: string; // Email del usuario
-  password?: string; // Contraseña hasheada del usuario
-  dob?: Date; // Fecha de nacimiento opcional
-  phone?: string; // Número de teléfono opcional
-  address?: string; // Lista opcional de direcciones
-  profileImage?: string; // URL opcional de la imagen de perfil
-  favorites?: ObjectId[]; // Lista de IDs de restaurantes favoritos
-}
 
-export interface IManagerCreate {
-  nombre: string;
-  apellido: string;
-  email: string;
-  password: string;
-}
+

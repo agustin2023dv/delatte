@@ -25,9 +25,3 @@ export interface IRestaurant extends Document {
   estaAbierto?: boolean;
   ultimaActualizacion?: Date;
 }
-
-export interface IRestaurantCreate {
-  nombre: string;
-  direccion: string;
-  emailContacto: string;
-}
