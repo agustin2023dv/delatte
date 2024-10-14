@@ -1,4 +1,4 @@
-import { IRestaurant, IRestaurantCreate } from "shared/interfaces/IRestaurant";
+import { IRestaurant } from "shared/interfaces/IRestaurant";
 import { Restaurant } from "../models/Restaurant";
 import { findUserByEmailService} from "./user.service";
 
@@ -13,39 +13,43 @@ export const getRestauranteIdByManagerService = async (managerId: string) => {
 };
 
 //** Servicio para actualizar un restaurante por ID
-export const updateRestaurantService = async (id: string, updateData: Partial<IRestaurant>) => {
+export const updateRestaurantService = async (id: string, newRestaurantData: Partial<IRestaurant>) => {
   try {
-    return await Restaurant.findByIdAndUpdate(id, updateData, { new: true });
+    return await Restaurant.findByIdAndUpdate(id, newRestaurantData, { new: true });
   } catch (error) {
     throw new Error('Error al actualizar el restaurante');
   }
 };
 
 //** Servicio para crear restaurante
-export const registerRestaurantService = async(restaurantData:IRestaurantCreate)=>{
+export const registerRestaurantService = async(restaurantData:Partial<IRestaurant>)=>{
 
   const email = restaurantData.emailContacto;
-  const existingUser = await findUserByEmailService(email);
-  
-  console.log(existingUser);
-  
-  try{
-    
-    const newRestaurant = new Restaurant({
-    ...restaurantData,
-    nombre:restaurantData.nombre,
-    emailContacto: restaurantData.emailContacto,
-    direccion: restaurantData.direccion,
-    managers: existingUser?.id     });
 
-    const savedRestaurant = await newRestaurant.save();
-    console.log('Restaurant guardado:', savedRestaurant);
-    return savedRestaurant;
-}
-catch(error){
-  console.error('Error al guardar el restaurant:', error);
-     throw error; 
-}
+  if(email){
+    const existingUser = await findUserByEmailService(email);
+    console.log(existingUser);
+    try{
+    
+      const newRestaurant = new Restaurant({
+      ...restaurantData,
+      nombre:restaurantData.nombre,
+      emailContacto: restaurantData.emailContacto,
+      direccion: restaurantData.direccion,
+      managers: existingUser?.id     });
+  
+      const savedRestaurant = await newRestaurant.save();
+      console.log('Restaurant guardado:', savedRestaurant);
+      return savedRestaurant;
+  }
+  catch(error){
+    console.error('Error al guardar el restaurant:', error);
+       throw error; 
+  }
+  }
+  else{
+    console.log("no existe usuario con ese correo");
+  }
   
 }
 
