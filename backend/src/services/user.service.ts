@@ -2,7 +2,7 @@ import User from '../models/User';
 import crypto from 'crypto';
 import { comparePasswordService, hashPasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
-import { IManagerCreate, IUser, IUserEdit } from 'shared/interfaces/IUser';
+import { IUser } from 'shared/interfaces/IUser';
 import { sendEmailService } from './email.service';
 
 
@@ -43,8 +43,9 @@ export const registerUserService = async (nombre: string, apellido: string, emai
 };
 
 //* Servicio para crear MANAGER
-export const registerManagerService = async (managerData:IManagerCreate) => {
+export const registerManagerService = async (managerData:Partial<IUser>) => {
 
+  if(managerData.email){
   // Crear un nuevo usuario con el token de verificación de email
   const newUserManager = new User({
     ...managerData,
@@ -77,6 +78,7 @@ export const registerManagerService = async (managerData:IManagerCreate) => {
     console.error('Error al guardar el usuario:', error);
     throw error; // Lanzar error si ocurre algún problema al guardar
   }
+}
 };
 
 //* Servicio para login de CUSTOMER
@@ -180,7 +182,7 @@ export const getUserDataService = async (userId: string) => {
 };
 
 // Servicio para actualizar los datos del usuario
-export const updateUserDataService = async (userData: IUserEdit) => {
+export const updateUserDataService = async (userData: Partial<IUser>) => {
   try {
     // Buscar el usuario por su email 
     const user = await User.findOne({ email: userData.email });
