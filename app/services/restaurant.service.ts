@@ -1,16 +1,17 @@
 import axios from 'axios';
-import {IManagerCreate} from 'shared/interfaces/IUser';
-import { IRestaurantCreate } from 'shared/interfaces/IRestaurant';
+import { IRestaurant} from 'shared/interfaces/IRestaurant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IUser } from 'shared/interfaces/IUser';
 
 const API_URL = 'http://localhost:8081/api/restaurantes';
 
 
 // Llamada para crear el manager y el restaurante
-export const createRestaurantAndManagerService = async (restaurantData: IRestaurantCreate, managerData: IManagerCreate) => {
+export const createRestaurantAndManagerService = async (restaurantData: Partial<IRestaurant>, managerData: Partial<IUser>) => {
   try {
     const response = await axios.post(`${API_URL}/register-restaurant`,{
       restaurant: restaurantData,
-      manager: managerData,
+      manager: managerData, 
     });
 
     return response.data; // Devolver los datos de la respuesta del servidor
@@ -31,22 +32,39 @@ export const getRestaurantByIdService = async (restaurantId: string) => {
   }
 };
 
-// Llamada para actualizar la información del restaurante
-export const updateRestaurantService = async (restaurantId: string, updateData: any) => {
+// Llamado para actualizar info de un restaurante
+export const updateRestaurantService = async (restaurantId: string, updateData: Partial<IRestaurant>) => {
   try {
-    const response = await axios.put( `${API_URL}/${restaurantId}`, updateData);
+    const token = await AsyncStorage.getItem('token'); 
+    const response = await axios.put(`${API_URL}/${restaurantId}`, updateData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error al actualizar el restaurante:', error);
-    throw error;
+    throw new Error('No se pudo actualizar el restaurante');
   }
 };
 
 export const getRestaurantsByManagerService = async (managerId: string) => {
   try {
-    const response = await axios.get(`${API_URL}/register/manager/${managerId}`);
+
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    const response = await axios.get(`${API_URL}/manager/${managerId}`,{
+      headers: {
+        Authorization: `Bearer ${token}` 
+      }
+    });
+    
     return response.data;
   } catch (error) {
     console.error('Error fetching restaurants:', error);
     throw new Error('Error fetching restaurants');
-  }};
+  }}; 
