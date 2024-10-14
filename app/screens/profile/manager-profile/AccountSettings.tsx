@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, Button, StyleSheet, Alert, Platform } from 'react-native';
 import { fetchUserDataService, updateUserDataService } from '@/app/services/user.service';
-import { IUser, IUserEdit } from 'shared/interfaces/IUser';
+import { IUser } from 'shared/interfaces/IUser';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -48,7 +48,7 @@ export default function AccountSettings() {
   const handleUpdateProfile = async () => {
     if (!managerData) return;
 
-    const updatedData: IUserEdit = {  
+    const updatedData: Partial<IUser> = {  
       email : managerData.email,
       phone: editingPhone, 
       address: editingAddress,  
@@ -87,7 +87,6 @@ export default function AccountSettings() {
       <Text style={styles.info}>Nombre: {managerData?.nombre || 'Nombre no disponible'}</Text>
       <Text style={styles.info}>Apellido: {managerData?.apellido || 'Apellido no disponible'}</Text>
       <Text style={styles.info}>Email: {managerData?.email || 'Correo no disponible'}</Text>
-
       <Text style={styles.info}>Teléfono:</Text>
       {isEditing ? (
         <TextInput
