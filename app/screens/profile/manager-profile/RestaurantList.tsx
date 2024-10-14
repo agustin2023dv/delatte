@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Button } from 'react-native';
-import { IRestaurant } from '../../../../shared/interfaces/IRestaurant'; 
-import { getRestaurantsByManagerService } from '@/app/services/restaurant.service'; 
-import { useAuth } from '../../../contexts/AuthContext'; 
+import { SafeAreaView, Text, StyleSheet, Button, View, TextInput } from 'react-native';
+import { Card, Title, Paragraph } from 'react-native-paper';
+import { IRestaurant } from '../../../../shared/interfaces/IRestaurant';
+import { getRestaurantsByManagerService, updateRestaurantService } from '@/app/services/restaurant.service';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function RestaurantList() {
   const { user } = useAuth();
-  const [restaurants, setRestaurants] = useState<IRestaurant[]>([]); 
+  const [restaurants, setRestaurants] = useState<IRestaurant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // Controla si estamos editando
+  const [editableRestaurant, setEditableRestaurant] = useState<Partial<IRestaurant>>({}); // Almacena los datos editados del restaurante
 
   useEffect(() => {
     async function fetchRestaurants() {
       try {
         if (user?.id) {
-          const response = await getRestaurantsByManagerService(user.id); // Pasar el ID del manager a la API
+          const response = await getRestaurantsByManagerService(user.id);
           setRestaurants(response);
         }
       } catch (error) {
@@ -24,26 +27,76 @@ export default function RestaurantList() {
     }
 
     if (user) {
-      fetchRestaurants(); // Llamar a la función solo si hay un usuario autenticado
+      fetchRestaurants();
     }
   }, [user]);
 
-  const handleUpdateRestaurant = async()=> {
-    
-  }
+  const handleUpdateRestaurant = async (restaurantId: string) => {
+    try {
+      const updatedData: Partial<IRestaurant> = {
+        nombre: editableRestaurant.nombre ,// Valores actuales o anteriores si no se editan
+        direccion: editableRestaurant.direccion
+      };
+  
+      const updatedRestaurant = await updateRestaurantService(restaurantId, updatedData);
+      console.log('Restaurante actualizado:', updatedRestaurant);
+      setIsEditing(false); // Desactivar el modo de edición
+    } catch (error) {
+      console.error('Error al actualizar el restaurante:', error);
+    }
+  };
+
+  const handleEditButtonPress = (restaurant: Partial<IRestaurant>) => {
+    setIsEditing(true);
+    setEditableRestaurant(restaurant); 
+  };
+
+  const handleInputChange = (field: keyof IRestaurant, value: string | boolean) => {
+    setEditableRestaurant({ ...editableRestaurant, [field]: value });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
         <Text>Cargando restaurantes...</Text>
       ) : (
-        restaurants.map((restaurant) => (
-          <View key={restaurant.id} style={styles.restaurantItem}>
-            <Text style={styles.restaurantName}>{restaurant.nombre}</Text>
-            <Text style={styles.restaurantDetails}>Dirección: {restaurant.direccion}</Text>
-            <Text style={styles.restaurantDetails}>Capacidad: {restaurant.capacidadMesas?.length} mesas</Text>
-            <Button title="Editar" onPress={handleUpdateRestaurant}/>
-          </View>
-        ))
+        <View style={styles.cardWrapper}>
+          {restaurants.map((restaurant) => (
+            <Card key={restaurant._id || restaurant.id} style={styles.restaurantCard}>
+              <Card.Cover source={{ uri: 'https://via.placeholder.com/100' }} style={styles.profileImage} />
+              <Card.Content>
+                {isEditing ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={editableRestaurant.nombre || restaurant.nombre}
+                      onChangeText={(text) => handleInputChange('nombre', text)}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      value={editableRestaurant.direccion || restaurant.direccion}
+                      onChangeText={(text) => handleInputChange('direccion', text)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Title>{restaurant.nombre}</Title>
+                    <Paragraph>Dirección: {restaurant.direccion}</Paragraph>
+                    <Paragraph>Capacidad: {restaurant.capacidadMesas?.length} mesas</Paragraph>
+                    <Paragraph>Estado: {restaurant.estaAbierto ? 'Abierto' : 'Cerrado'}</Paragraph>
+                  </>
+                )}
+              </Card.Content>
+              <Card.Actions>
+                {isEditing ? (
+                  <Button title="Guardar" onPress={() => handleUpdateRestaurant(restaurant._id || restaurant.id)} />
+                ) : (
+                  <Button title="Gestionar" onPress={() => handleEditButtonPress(restaurant)} />
+                )}
+              </Card.Actions>
+            </Card>
+          ))}
+        </View>
       )}
     </SafeAreaView>
   );
@@ -52,17 +105,33 @@ export default function RestaurantList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: 10,
+    marginTop: 40,
   },
-  restaurantItem: {
+  cardWrapper: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  restaurantCard: {
+    width: '35%',
     marginBottom: 15,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  restaurantName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  profileImage: {
+    height: 200, // Mantener el tamaño de la imagen
   },
-  restaurantDetails: {
-    fontSize: 14,
-    color: '#555',
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
 });
