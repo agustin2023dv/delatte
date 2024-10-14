@@ -4,7 +4,7 @@ import { registerRestaurantAndManagerController, getRestaurantByIdController,
 from '../controllers/restaurante.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
-//import { managerOfRestaurantMiddleware } from '../middlewares/restaurant.middleware';
+import { managerOfRestaurantMiddleware } from '../middlewares/restaurant.middleware';
 import {  validateRestaurantUpdate } from '../../../shared/utils/restaurant.validation';
 
 const router = Router();
@@ -26,7 +26,7 @@ router.get(
 router.put(
   '/:id', 
   authMiddleware, 
-  //managerOfRestaurantMiddleware, // Verificar que sea el manager del restaurante o superadmin
+  managerOfRestaurantMiddleware, // Verificar que sea el manager del restaurante o superadmin
   validateRestaurantUpdate,  // Validar todos los campos posibles en la actualización
   updateRestaurantController
 );

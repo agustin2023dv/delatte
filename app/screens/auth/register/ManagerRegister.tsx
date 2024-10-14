@@ -75,8 +75,7 @@ export default function ManagerRegister() {
         <TextInput style={styles.input} placeholder="Dirección del Restaurante" value={restaurantAddress} onChangeText={setRestaurantAddress} />
         <Button title="Crear cuenta" onPress={handleSignUp} />
       </View>
-    </SafeAreaView>
-  );
+    </SafeAreaView> );  
 }
 
 const styles = StyleSheet.create({
