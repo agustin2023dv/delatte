@@ -5,6 +5,8 @@
       "dom",
       "es2017"
     ],
+    "typeRoots": ["./node_modules/@types"]
+    ,
     "jsx": "react-native",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
