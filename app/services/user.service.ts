@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  {jwtDecode}  from 'jwt-decode';
-import { IUser, IUserEdit } from 'shared/interfaces/IUser';
+import { IUser} from 'shared/interfaces/IUser';
 
 const API_URL = 'http://localhost:8081/api/users';
 
@@ -163,7 +163,7 @@ export const fetchUserDataService = async () => {
 
 // **Función para cambiar datos de usuario**
 
-export const updateUserDataService = async (updatedData: IUserEdit) => {
+export const updateUserDataService = async (updatedData: Partial<IUser>) => {
   try {
     const token = await AsyncStorage.getItem('token');
 
