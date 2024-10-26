@@ -21,7 +21,18 @@ export const createRestaurantAndManagerService = async (restaurantData: Partial<
   }
 };
 
-// Llamada para obtener información de un restaurante por ID
+// Llamado para obtener la info de todos los restaurantes
+export const getAllRestaurantsService=async()=>{
+  try {
+    const response = await axios.get(`${API_URL}/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener restaurantes:', error);
+    throw error;
+  }
+}
+
+// Llamado para obtener información de un restaurante por ID
 export const getRestaurantByIdService = async (restaurantId: string) => {
   try {
     const response = await axios.get(`${API_URL}/${restaurantId}`);
@@ -68,3 +79,10 @@ export const getRestaurantsByManagerService = async (managerId: string) => {
     console.error('Error fetching restaurants:', error);
     throw new Error('Error fetching restaurants');
   }}; 
+
+
+  // Servicio para obtener reviews de un restaurante en especifico
+export const getReviewsService = async (restaurantId: string) => {
+  const response = await axios.get(`${API_URL}/${restaurantId}/reviews`);
+  return response.data;
+};
