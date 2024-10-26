@@ -12,5 +12,5 @@ const ReservaSchema: Schema = new Schema<IReservation>({
   pasada: {type:Boolean, default:false}
 });
 
-const Reservation = mongoose.model<IReservation>('Reservation', ReservaSchema, 'reservations');
+const Reservation = mongoose.model<IReservation>('Reservation', ReservaSchema, 'reservas');
 export default Reservation;
