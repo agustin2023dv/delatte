@@ -12,6 +12,17 @@ export const getRestauranteIdByManagerService = async (managerId: string) => {
   }
 };
 
+//* Servicio para obtener TODOS los restaurantes
+export const getAllRestaurantsService = async()=>{
+  try {
+    const restaurantes = await Restaurant.find();
+      return restaurantes;
+
+  } catch (error) {
+    throw new Error('Error al obtener restaurantes');
+  }
+}
+
 //** Servicio para actualizar un restaurante por ID
 export const updateRestaurantService = async (id: string, newRestaurantData: Partial<IRestaurant>) => {
   try {
