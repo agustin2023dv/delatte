@@ -1,13 +1,20 @@
 import { Router } from 'express';
 import { registerRestaurantAndManagerController, getRestaurantByIdController, 
-  updateRestaurantController, getRestaurantsByManagerIdController } 
+  updateRestaurantController, getRestaurantsByManagerIdController, 
+  getAllRestaurantsController} 
 from '../controllers/restaurante.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
 import { managerOfRestaurantMiddleware } from '../middlewares/restaurant.middleware';
 import {  validateRestaurantUpdate } from '../../../shared/utils/restaurant.validation';
+import { getReviewsByRestaurantController } from '../controllers/resena.controller';
 
 const router = Router();
+
+//*Ruta para OBTENER todos los restaurantes
+router.get('/',
+  getAllRestaurantsController
+);
 
 //* Ruta para CREAR un restaurante (solo superadmins o managers pueden crear)
 router.post(
@@ -36,5 +43,8 @@ router.get('/manager/:managerId',
   authMiddleware, 
   roleMiddleware(['manager', 'superadmin']), 
   getRestaurantsByManagerIdController);
+
+//*Ruta para obtener las reviews del restaurante
+  router.get('/:id/reviews', getReviewsByRestaurantController);
 
 export default router;
