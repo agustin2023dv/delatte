@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  getAllRestaurantsService,
   getRestaurantDetailsService,
   getRestaurantsByManagerIdService,
   registerRestaurantService,
@@ -23,7 +24,6 @@ export const registerRestaurantAndManagerController = async (req: Request, res: 
     
     const savedManager=  await registerManagerService(managerData);
     const savedRestaurant= await registerRestaurantService(restaurantData);
-
     
     return res.status(201).json({ savedRestaurant, savedManager });
   } catch (error) {
@@ -31,6 +31,18 @@ export const registerRestaurantAndManagerController = async (req: Request, res: 
   }
 };
 
+//* Controlador para obtener TODOS los restaurantes
+export const getAllRestaurantsController = async (req: Request, res:Response)=>{
+  try {
+    const restaurants = await getAllRestaurantsService();
+    if (!restaurants || restaurants.length === 0) { // Comprobar si no hay restaurantes
+      return res.status(404).json({ message: 'No se encontraron restaurantes' });
+    }
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al obtener restaurantes', error });
+  }
+}
 
 //* Controlador para obtener los detalles de un restaurante
 export const getRestaurantByIdController = async (req: Request, res: Response) => {
