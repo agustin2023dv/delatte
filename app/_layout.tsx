@@ -12,6 +12,7 @@ export default function HomeLayout() {
         <Stack.Screen name="screens/auth/login/Login"/>
         <Stack.Screen name="screens/auth/register/Register" />
         <Stack.Screen name="screens/auth/VerifyEmail" />
+        <Stack.Screen name="screens/home/HomeScreen" />
       </Stack>
     </AuthProvider>
   );
