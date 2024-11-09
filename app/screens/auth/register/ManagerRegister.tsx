@@ -9,7 +9,8 @@ import {
   validatePassword, 
   validateConfirmPassword,
   validateRestaurantName,
-  validateRestaurantAddress 
+  validateRestaurantAddress, 
+  validateRestaurantPostCode
 } from '../../../../shared/utils/auth.validation';
 import { Redirect } from 'expo-router';
 
@@ -23,6 +24,7 @@ export default function ManagerRegister() {
   // Información del restaurante
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantAddress, setRestaurantAddress] = useState('');
+  const [restaurantPostCode, setRestaurantPostcode] = useState('');
 
   const handleSignUp = async () => {
     const nombreError = validateNombre(nombre);
@@ -32,12 +34,13 @@ export default function ManagerRegister() {
     const cPasswordError = validateConfirmPassword(password, cPassword);
     const restaurantNameError = validateRestaurantName(restaurantName);
     const restaurantAddressError = validateRestaurantAddress(restaurantAddress);
+    const restaurantPostCodeError = validateRestaurantPostCode(restaurantPostCode);
 
     if (nombreError || apellidoError || emailError || passwordError || cPasswordError || restaurantNameError 
-      || restaurantAddressError) {
+      || restaurantAddressError || restaurantPostCodeError) {
       Alert.alert('Errores en el formulario', 
         `${nombreError || ''}\n${apellidoError || ''}\n${emailError || ''}\n${passwordError || ''}\n${cPasswordError 
-          || ''}\n${restaurantNameError || ''}\n${restaurantAddressError || ''}`
+          || ''}\n${restaurantNameError || ''}\n${restaurantAddressError || ''} \n${restaurantAddressError}`
       );
       return;
     }
@@ -46,6 +49,7 @@ export default function ManagerRegister() {
        await createRestaurantAndManagerService({
         nombre: restaurantName,
         direccion: restaurantAddress,
+        codigoPostal: restaurantPostCode,
         emailContacto: email
       }, {  nombre: nombre, apellido:apellido, email: email,password: password });
       
@@ -73,6 +77,7 @@ export default function ManagerRegister() {
         {/* Campos adicionales para restaurante */}
         <TextInput style={styles.input} placeholder="Nombre del Restaurante" value={restaurantName} onChangeText={setRestaurantName} />
         <TextInput style={styles.input} placeholder="Dirección del Restaurante" value={restaurantAddress} onChangeText={setRestaurantAddress} />
+        <TextInput style={styles.input} placeholder='Codigo postal' value={restaurantPostCode} onChangeText={setRestaurantPostcode}/>
         <Button title="Crear cuenta" onPress={handleSignUp} />
       </View>
     </SafeAreaView> );  
