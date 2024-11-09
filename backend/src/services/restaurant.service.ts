@@ -1,6 +1,7 @@
 import { IRestaurant } from "shared/interfaces/IRestaurant";
 import { Restaurant } from "../models/Restaurant";
 import { findUserByEmailService} from "./user.service";
+import { getCoordinatesFromAddress } from "./distance-matrix.service";
 
 //* Servicio para obtener el restaurante del manager
 export const getRestauranteIdByManagerService = async (managerId: string) => {
@@ -33,36 +34,57 @@ export const updateRestaurantService = async (id: string, newRestaurantData: Par
 };
 
 //** Servicio para crear restaurante
-export const registerRestaurantService = async(restaurantData:Partial<IRestaurant>)=>{
-
+export const registerRestaurantService = async (restaurantData: Partial<IRestaurant>) => {
   const email = restaurantData.emailContacto;
 
-  if(email){
-    const existingUser = await findUserByEmailService(email);
-    console.log(existingUser);
-    try{
-    
-      const newRestaurant = new Restaurant({
-      ...restaurantData,
-      nombre:restaurantData.nombre,
-      emailContacto: restaurantData.emailContacto,
-      direccion: restaurantData.direccion,
-      managers: existingUser?.id     });
-  
-      const savedRestaurant = await newRestaurant.save();
-      console.log('Restaurant guardado:', savedRestaurant);
-      return savedRestaurant;
+  if (email) {
+      const existingUser = await findUserByEmailService(email);
+      console.log(existingUser);
+
+      try {
+          const direccionCompleta = `${restaurantData.direccion}, Montevideo, ${restaurantData.codigoPostal || ''}, Uruguay`;
+          console.log(direccionCompleta);
+
+          let latitude: number | undefined;
+          let longitude: number | undefined;
+
+          try {
+              const coordenadas = await getCoordinatesFromAddress(direccionCompleta);
+              console.log(coordenadas);
+              if (coordenadas) {
+                  latitude = coordenadas.latitude;
+                  longitude = coordenadas.longitude;
+              } else {
+                  throw new Error("No se encontraron coordenadas para la dirección proporcionada.");
+              }
+          } catch (error) {
+              console.error('Error al obtener coordenadas:', error);
+              throw new Error('Restaurante no encontrado');
+          }
+
+          const newRestaurant = new Restaurant({
+              ...restaurantData,
+              nombre: restaurantData.nombre,
+              emailContacto: restaurantData.emailContacto,
+              direccion: restaurantData.direccion,
+              codigoPostal: restaurantData.codigoPostal,
+              latitud: latitude,
+              longitud: longitude,
+              managers: existingUser?.id
+          });
+
+          const savedRestaurant = await newRestaurant.save();
+          console.log('Restaurant guardado:', savedRestaurant);
+          return savedRestaurant;
+      } catch (error) {
+          console.error('Error al guardar el restaurant:', error);
+          throw error;
+      }
+  } else {
+      console.log("No existe usuario con ese correo");
   }
-  catch(error){
-    console.error('Error al guardar el restaurant:', error);
-       throw error; 
-  }
-  }
-  else{
-    console.log("no existe usuario con ese correo");
-  }
-  
-}
+};
+
 
 
 // ** Servicio para obtener todos los detalles de un restaurante por ID
