@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginCustomerService, loginManagerService, registerUser, 
+import { loginCustomerService, loginManagerService, registerUserService, 
   verifyEmail as verifyEmailService } from '../services/user.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; 
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (nombre: string, apellido: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      await registerUser(nombre, apellido, email, password); // Registrar el usuario
+      await registerUserService(nombre, apellido, email, password); // Registrar el usuario
       // No iniciar sesión automáticamente, esperar verificación de email
     } catch (err: any) {
       setError(err.message); // Establecer el mensaje de error
