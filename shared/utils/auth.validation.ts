@@ -58,3 +58,10 @@ export const validateNombre = (nombre: string): string | null => {
     return null;
   };
   
+
+  // Validar codigo postal del restaurante
+  export const validateRestaurantPostCode = (address: string): string | null => {
+    if (!address) return "El codigo postal del restaurante es requerido";
+    if (address.length != 5) return "La dirección del restaurante debe tener 5 caracteres";
+    return null;
+  };
