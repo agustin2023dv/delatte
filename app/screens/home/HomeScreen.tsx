@@ -1,50 +1,16 @@
-import { getAllRestaurantsService } from "@/app/services/restaurant.service";
-import { useEffect, useState } from "react";
-import { IRestaurant } from "shared/interfaces/IRestaurant";
-import {  Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { RestaurantCard } from "components/restaurant/RestaurantCard";
-import { ScrollView } from "react-native";
+import React from "react";
+import { SafeAreaView, Text } from "react-native";
+import { RestaurantList } from "components/restaurant/RestaurantList";
+import { useAuth } from "@/app/contexts/AuthContext";
 
+export default function HomeScreen() {
+  const { user, logout } = useAuth();
 
-export default function HomeScreen(){
-
-    const [restaurantsInfo, setRestaurantsInfo] = useState<Partial<IRestaurant> | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchRestaurantsInfo() {
-            try {
-                const data = await getAllRestaurantsService();
-                setRestaurantsInfo(data); 
-            } catch (error) {
-                console.error('Error al obtener información del restaurante:', error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchRestaurantsInfo();
-    }, []);
-
-    if (loading) {
-        return <Text>Cargando restaurantes...</Text>;
-    }
-
-    if(restaurantsInfo){
-
-        return(<>
-            <SafeAreaView>
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
         
-                    <ScrollView>
-       
-                    </ScrollView>
-        
-        
-            </SafeAreaView>
-            
-            </>)
+        <RestaurantList/>
 
-    }
-   
+    </SafeAreaView>
+  );
 }
