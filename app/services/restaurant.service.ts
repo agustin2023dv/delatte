@@ -22,15 +22,22 @@ export const createRestaurantAndManagerService = async (restaurantData: Partial<
 };
 
 // Llamado para obtener la info de todos los restaurantes
-export const getAllRestaurantsService=async()=>{
+export const getAllRestaurantsService = async () => {
   try {
-    const response = await axios.get(`${API_URL}/`);
+    const token = await AsyncStorage.getItem('token');
+    console.log("Token:", token);
+    const response = await axios.get(`${API_URL}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error al obtener restaurantes:', error);
     throw error;
   }
-}
+};
+
 
 // Llamado para obtener información de un restaurante por ID
 export const getRestaurantByIdService = async (restaurantId: string) => {
