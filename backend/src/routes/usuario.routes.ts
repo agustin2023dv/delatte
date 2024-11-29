@@ -1,5 +1,6 @@
 import express from 'express';
-import {cambiarContrasenaController, getUserProfileController, loginCustomerController,loginManagerController, registrarUsuarioController,
+import {addFavoriteRestaurantController, cambiarContrasenaController, getUserProfileController, loginCustomerController,loginManagerController, registrarUsuarioController,
+     removeFavoriteRestaurantController,
      updateUserDataController, verificarEmailController} from '../controllers/usuario.controller'
 import {authMiddleware} from '../middlewares/auth.middleware';
 import { loginRateLimiter } from '../middlewares/rateLimiter.middlware';

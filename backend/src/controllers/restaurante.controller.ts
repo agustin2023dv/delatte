@@ -9,7 +9,7 @@ import {
 } from '../services/restaurant.service';
 import { registerManagerService } from '../services/user.service';
 import { hashPasswordService } from '../services/auth.service';
-import { validateSearchQuery } from 'shared/utils/search.validation';
+//import  {validateSearchQuery}  from 'shared/utils/search.validation';
 
 //* Controlador para crear un nuevo restaurante y manager
 export const registerRestaurantAndManagerController = async (req: Request, res: Response) => {
@@ -94,7 +94,7 @@ export const getSearchResultsController = async (req: Request, res: Response) =>
       const query = req.query.q as string;
 
       // Llama a la función de validación
-      if (!query || !validateSearchQuery(query)) {
+      if (!query /*|| !validateSearchQuery(query)*/) {
           return res.status(400).json({ message: 'Parámetro de búsqueda no válido' });
       }
 
