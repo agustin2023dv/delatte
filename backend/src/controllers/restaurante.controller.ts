@@ -4,10 +4,12 @@ import {
   getRestaurantDetailsService,
   getRestaurantsByManagerIdService,
   registerRestaurantService,
+  searchRestaurantsService,
   updateRestaurantService
 } from '../services/restaurant.service';
 import { registerManagerService } from '../services/user.service';
 import { hashPasswordService } from '../services/auth.service';
+import { validateSearchQuery } from 'shared/utils/search.validation';
 
 //* Controlador para crear un nuevo restaurante y manager
 export const registerRestaurantAndManagerController = async (req: Request, res: Response) => {
@@ -83,5 +85,23 @@ export const getRestaurantsByManagerIdController = async (req: Request, res: Res
     return res.status(200).json(restaurants);
   } catch (error) {
     return res.status(500).json({ message: 'Error al obtener los restaurantes', error });
+  }
+};
+
+
+export const getSearchResultsController = async (req: Request, res: Response) => {
+  try {
+      const query = req.query.q as string;
+
+      // Llama a la función de validación
+      if (!query || !validateSearchQuery(query)) {
+          return res.status(400).json({ message: 'Parámetro de búsqueda no válido' });
+      }
+
+      const results = await searchRestaurantsService(query);
+      res.json(results);
+  } catch (error) {
+      console.error('Error en la búsqueda:', error);
+      res.status(500).json({ message: 'Error en la búsqueda', error });
   }
 };

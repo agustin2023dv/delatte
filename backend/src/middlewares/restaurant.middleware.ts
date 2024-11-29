@@ -36,3 +36,15 @@ export const managerOfRestaurantMiddleware = async (req: Request, res: Response,
     return res.status(500).json({ message: 'Error al verificar el manager del restaurante', error });
   }
 };
+
+
+//*
+export const validateSearchParams = (req: Request, res: Response, next: NextFunction) => {
+  const { ubicacion, tipoComida } = req.query;
+
+  if (!ubicacion && !tipoComida) {
+      return res.status(400).json({ message: 'Debe proporcionar al menos un parámetro de búsqueda (ubicacion o tipo de comida)' });
+  }
+
+  next();
+};
