@@ -2,6 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  {jwtDecode}  from 'jwt-decode';
 import { IUser} from 'shared/interfaces/IUser';
+import { ObjectId } from 'mongoose';
 
 const API_URL = 'http://localhost:8081/api/users';
 
@@ -185,5 +186,40 @@ export const updateUserDataService = async (updatedData: Partial<IUser>) => {
     } else {
       throw new Error('Error inesperado');
     }
+  }
+};
+
+// * Servicio para agregar restaurante a favoritos
+export const addFavoriteRestaurantService = async (restaurantId: ObjectId) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+
+    const response = await axios.post(
+      `${API_URL}/favorites`,
+      { restaurantId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error al agregar favorito:', error);
+    throw error;
+  }
+};
+
+//* Servicio para eliminar restaurante de favoritos
+export const removeFavoriteRestaurantService = async (restaurantId: ObjectId) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('No se encontró un token de autenticación');
+
+    const response = await axios.delete(`${API_URL}/favorites`, {
+      data: { restaurantId },
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar favorito:', error);
+    throw error;
   }
 };
