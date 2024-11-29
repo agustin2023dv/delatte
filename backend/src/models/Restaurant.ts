@@ -1,34 +1,46 @@
-import mongoose, { Schema } from 'mongoose';
-import { IRestaurant } from '../../../shared/interfaces/IRestaurant';
+import mongoose, { Schema } from "mongoose";
+import { IRestaurant } from "shared/interfaces/IRestaurant";
 
 const RestaurantSchema = new Schema<IRestaurant>({
-  nombre: { type: String }, // Nombre del restaurante
-  direccion: { type: String }, // Dirección del restaurante (calle y altura)
-  localidad: { type: String, default: 'Montevideo' }, // Localidad o ciudad del restaurante
-  pais:{type: String, default: 'Uruguay'},
-  codigoPostal: { type: String, required: true }, // Código postal
-  telefonos: [{ type: String, default: [] }], // Lista de teléfonos de contacto del restaurante
-  emailContacto: { type: String }, // Correo electrónico de contacto
-  logo: { type: String , default:'Logo restaurante' }, // URL de la imagen del logo
-  galeriaFotos: [{ type: String , default: [] }], // Array de URLs de la galería de fotos
+  nombre: { type: String, required: true },
+  direccion: { type: String, required: true },
+  localidad: { type: String, default: 'Montevideo' },
+  pais: { type: String, default: 'Uruguay' },
+  codigoPostal: { type: String, required: true },
+  telefonos: [{ type: String, default: [] }],
+  emailContacto: { type: String, match: /.+\@.+\..+/ },
+  logo: { type: String, default: 'Logo restaurante' },
+  galeriaFotos: [{ type: String, default: [] }],
   calificacion: { type: Number, default: 1, min: 1, max: 5 },
-  horarios: [{ // Lista de horarios de apertura y cierre por día
-    dia: { type: String },
-    horaApertura: { type: String },
-    horaCierre: { type: String }
+  horarios: [{
+    dia: { type: String, enum: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'], required: true },
+    horaApertura: { type: String, required: true },
+    horaCierre: { type: String, required: true }
   }],
-  capacidadMesas: [{ // Capacidad del restaurante, definido por mesas y personas por mesa
+  capacidadMesas: [{
     cantidad: { type: Number, default: 1 },
     personasPorMesa: { type: Number, default: 2 }
   }],
-  menuComida: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu', default: [] }],  // Relación con el modelo de menú de comidas
-  menuBebidas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu', default: [] }], // Relación con el modelo de menú de bebidas
-  menuPostres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Menu', default: [] }],  // Relación con el modelo de menú de postres
-  managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }], // Relación con el modelo de User para los managers
-  estaAbierto: { type: Boolean, default: true }, // Indica si el restaurante está operando o no
-  ultimaActualizacion: { type: Date, default: Date.now }, // Fecha de la última actualización de datos
-  latitud: { type: Number, default: 1}, // Coordenada de latitud
-  longitud: { type: Number, default:1 } // Coordenada de longitud
+  menus: [{
+    tipo: { type: String, enum: ['Comida', 'Bebidas', 'Postres'], required: true },
+    items: [{
+      nombre: { type: String, required: true },
+      descripcion: { type: String, required: true },
+      precio: { type: Number, required: true }
+    }]
+  }],
+  managerPrincipal: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  coManagers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+  estaAbierto: { type: Boolean, default: true },
+  ultimaActualizacion: { type: Date, default: Date.now },
+  latitud: { type: Number, required: true },
+  longitud: { type: Number, required: true },
+  tags: [{ type: String }]
 });
 
-export const Restaurant = mongoose.model<IRestaurant>('Restaurant', RestaurantSchema, "restaurantes"); // Crear el modelo de restaurante basado en el esquema
+RestaurantSchema.index({ localidad: 1 });
+RestaurantSchema.index({ calificacion: -1 });
+RestaurantSchema.index({ estaAbierto: 1 });
+
+const Restaurant = mongoose.model<IRestaurant>('Restaurant', RestaurantSchema, 'restaurantes'); 
+export default Restaurant;
