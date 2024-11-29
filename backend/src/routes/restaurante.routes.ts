@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { registerRestaurantAndManagerController, getRestaurantByIdController, 
   updateRestaurantController, getRestaurantsByManagerIdController, 
-  getAllRestaurantsController} 
+  getAllRestaurantsController,
+  getSearchResultsController} 
 from '../controllers/restaurante.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
@@ -15,6 +16,10 @@ const router = Router();
 router.get('/',
   getAllRestaurantsController
 );
+
+//* Ruta para buscar restaurantes por ubicación o tipo de comida
+ router.get('/search', 
+  getSearchResultsController );
 
 //* Ruta para CREAR un restaurante (solo superadmins o managers pueden crear)
 router.post(

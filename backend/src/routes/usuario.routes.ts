@@ -27,4 +27,10 @@ router.get('/profile', authMiddleware, getUserProfileController);
 //*Ruta para actualizar el perfil del usuario (PUT)
 router.put('/profile', authMiddleware, updateUserDataController);
 
+// *Ruta para agregar restaurante a favoritos
+router.post('/favorites', authMiddleware,addFavoriteRestaurantController);
+
+// *Ruta para eliminar restaurante de favoritos
+router.delete('/favorites',authMiddleware, removeFavoriteRestaurantController);
+
 export default router;
