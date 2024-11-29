@@ -4,29 +4,32 @@ export interface IRestaurant extends Document {
   _id: ObjectId | string; // ID del restaurante
   nombre: string; // Nombre del restaurante
   direccion: string; // Dirección del restaurante
-  pais: string;
+  pais: string; // País donde se encuentra el restaurante
   localidad: string; // Localidad donde se encuentra el restaurante
-  codigoPostal: string;
-  telefonos: string[];  // Lista de teléfonos de contacto
+  codigoPostal: string; // Código postal
+  telefonos: string[]; // Lista de teléfonos de contacto
   emailContacto: string; // Email de contacto del restaurante
   logo: string; // URL de la imagen del logo
   galeriaFotos: string[]; // URLs de las imágenes de la galería
-  calificacion: number;
+  calificacion: number; // Calificación del restaurante (1-5)
   horarios: { // Lista de horarios de apertura y cierre por día
-    dia: string;
-    horaApertura: string;
-    horaCierre: string;
+    dia: 'Lunes' | 'Martes' | 'Miércoles' | 'Jueves' | 'Viernes' | 'Sábado' | 'Domingo'; // Día de la semana
+    horaApertura: string; // Hora de apertura
+    horaCierre: string; // Hora de cierre
   }[];
   capacidadMesas: { // Capacidad del restaurante en términos de mesas y personas por mesa
-    cantidad: number;
-    personasPorMesa: number;
+    cantidad: number; // Cantidad de mesas
+    personasPorMesa: number; // Número de personas por mesa
   }[];
-  menuComida: ObjectId[];  // IDs de los menús de comida relacionados
-  menuBebidas: ObjectId[];  // IDs de los menús de bebidas relacionados
-  menuPostres: ObjectId[];  // IDs de los menús de postres relacionados
-  managers: ObjectId[]; // Managers del restaurante. Usuarios con rol {manager}
-  estaAbierto: boolean;
-  ultimaActualizacion: Date;
-  longitud:number;
-  latitud:number;
+  menus: { // Menús relacionados (unificados en un solo atributo)
+    tipo: 'Comida' | 'Bebidas' | 'Postres'; // Tipo de menú
+    menuId: ObjectId; // ID del menú relacionado
+  }[];
+  managerPrincipal: ObjectId; // ID del manager principal
+  coManagers: ObjectId[]; // IDs de los co-managers del restaurante
+  estaAbierto: boolean; // Indica si el restaurante está operando
+  ultimaActualizacion: Date; // Fecha de la última actualización de datos
+  latitud: number; // Coordenada de latitud
+  longitud: number; // Coordenada de longitud
+  tags?: string[]; // Etiquetas opcionales para filtros avanzados
 }
