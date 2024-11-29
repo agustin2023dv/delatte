@@ -93,3 +93,17 @@ export const getReviewsService = async (restaurantId: string) => {
   const response = await axios.get(`${API_URL}/${restaurantId}/reviews`);
   return response.data;
 };
+
+
+// Llamada para buscar restaurantes
+export const searchRestaurantsService = async (query: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/search`, {
+      params: { q: query }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al buscar restaurantes:', error);
+    throw new Error('Error al buscar restaurantes');
+  }
+};
