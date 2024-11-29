@@ -1,7 +1,7 @@
 import { IRestaurant } from "shared/interfaces/IRestaurant";
-import { Restaurant } from "../models/Restaurant";
 import { findUserByEmailService} from "./user.service";
 import { getCoordinatesFromAddress } from "./distance-matrix.service";
+import Restaurant from "../models/Restaurant";
 
 //* Servicio para obtener el restaurante del manager
 export const getRestauranteIdByManagerService = async (managerId: string) => {
@@ -85,6 +85,15 @@ export const registerRestaurantService = async (restaurantData: Partial<IRestaur
   }
 };
 
+//*
+export const searchRestaurantsService = async (query: string) => {
+  return Restaurant.find({ nombre: { $regex: query, $options: 'i' } })
+    .catch(error => {
+      console.error('Error en la búsqueda:', error);
+      throw error;
+    });
+};
+
 
 
 // ** Servicio para obtener todos los detalles de un restaurante por ID
@@ -98,10 +107,6 @@ export const getRestaurantDetailsService = async (restaurantId: string) => {
 
     if (!restaurant) {
       throw new Error('Restaurante no encontrado');
-    }
-
-    if (!restaurant.menuComida || !restaurant.menuBebidas || !restaurant.menuPostres) {
-      throw new Error('Algunos menús del restaurante no se pudieron encontrar');
     }
 
     return restaurant;
