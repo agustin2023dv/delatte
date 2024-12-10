@@ -1,6 +1,9 @@
 import express from 'express';
-import {addFavoriteRestaurantController, cambiarContrasenaController, getUserProfileController, loginCustomerController,loginManagerController, registrarUsuarioController,
+import {addFavoriteRestaurantController, cambiarContrasenaController, getUserProfileController,
+      loginCustomerController,loginManagerController, registrarUsuarioController,
      removeFavoriteRestaurantController,
+     requestPasswordResetController,
+     resetPasswordController,
      updateUserDataController, verificarEmailController} from '../controllers/usuario.controller'
 import {authMiddleware} from '../middlewares/auth.middleware';
 import { loginRateLimiter } from '../middlewares/rateLimiter.middlware';
@@ -33,5 +36,11 @@ router.post('/favorites', authMiddleware,addFavoriteRestaurantController);
 
 // *Ruta para eliminar restaurante de favoritos
 router.delete('/favorites',authMiddleware, removeFavoriteRestaurantController);
+
+//* Ruta para solicitar un enlace de restablecimiento de contraseña
+router.post('/request-password-reset', requestPasswordResetController);
+
+//* Ruta para restablecer la contraseña con el token
+router.post('/password-reset', resetPasswordController);
 
 export default router;

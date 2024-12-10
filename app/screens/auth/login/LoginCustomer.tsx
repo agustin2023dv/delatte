@@ -1,27 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { loginCustomer } from '@/app/services/user.service'; 
 import { useAuth } from '../../../contexts/AuthContext';
+import { validateEmail, validatePassword } from 'shared/utils/auth.validation';
+import { useNavigation } from '@react-navigation/native';
+import { Link } from 'expo-router';
 
 export default function LoginCustomer() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setAuthState } = useAuth(); // Obtener la función del contexto para actualizar el estado de autenticación
+  const auth = useAuth(); // Obtener el contexto completo
+  const navigation = useNavigation(); // Hook de navegación
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
+    // Validar campos
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      Alert.alert('Errores en el formulario', `${emailError || ''}\n${passwordError || ''}`);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const data = await loginCustomer(email, password); // Llamar al servicio de loginCustomer
-      setAuthState(data); // Actualizar el contexto de autenticación con el usuario y el token
-    } catch (err) {
-      setError('Error al iniciar sesión como customer.');
+      await auth.loginCustomer(email, password); // Llamada al método del contexto para iniciar sesión
+      // navigation.navigate('Home'); // Redirigir al home después del login
+    } catch (err: any) {
+      setError(err.message || 'Error al iniciar sesión como Customer.');
     } finally {
       setIsLoading(false);
     }
   };
+
+
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -44,7 +58,15 @@ export default function LoginCustomer() {
         {isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <Button title="Iniciar Sesión" onPress={handleLogin} />
+          <>
+            <Button title="Iniciar Sesión" onPress={handleLogin} />
+            <View style={styles.buttonSpacing}>
+              <Link href="/screens/auth/forgotPassword/ForgotPassword">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            
+            </View>
+          </>
         )}
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
@@ -58,4 +80,5 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10 },
   errorText: { color: 'red', textAlign: 'center', marginTop: 10 },
+  buttonSpacing: { marginTop: 10 },
 });

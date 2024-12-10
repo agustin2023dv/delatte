@@ -23,10 +23,10 @@ export default function Home() {
     return (
       <View>
         {/* Enlace para navegar a la pantalla de login */}
-        <Link href="../screens/auth/login/Login">Inicia sesión</Link>
+        <Link href="../screens/auth/login">Inicia sesión</Link>
         
         {/* Enlace para navegar a la pantalla de registro */}
-        <Link href="../screens/auth/register/Register">Regístrate</Link>
+        <Link href="../screens/auth/register">Regístrate</Link>
         
         {/* Texto que indica la pantalla actual */}
         <Text>Home screen</Text>

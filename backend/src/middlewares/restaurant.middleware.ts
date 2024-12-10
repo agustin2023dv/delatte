@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import  Restaurant  from '../models/Restaurant';
+import  Restaurant  from '../models/Restaurant.model';
 
 /* Middleware para verificar si el usuario es el manager del restaurante*/
 export const managerOfRestaurantMiddleware = async (

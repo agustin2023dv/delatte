@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createRestaurantAndManagerService } from '../../../services/restaurant.service';
-import { 
-  validateNombre, 
-  validateApellido, 
-  validateEmail, 
-  validatePassword, 
-  validateConfirmPassword,
-  validateRestaurantName,
-  validateRestaurantAddress, 
-  validateRestaurantPostCode
-} from '../../../../shared/utils/auth.validation';
+import { createRestaurantAndManagerService } from '@/app/services/restaurant.service';
+import {validateApellido,validateNombre,
+  validateConfirmPassword,validateEmail,
+  validatePassword,validateRestaurantName,
+  validateRestaurantPostCode,validateRestaurantAddress
+} from '@/app/../shared/utils/auth.validation';
 import { Redirect } from 'expo-router';
 
 export default function ManagerRegister() {

@@ -1,4 +1,4 @@
-import Reservation from '../models/Reservation';
+import Reservation from '../models/Reservation.model';
 import { IReservation } from '../../../shared/interfaces/IReservation';
 import { getRestauranteIdByManagerService } from './restaurant.service';
 

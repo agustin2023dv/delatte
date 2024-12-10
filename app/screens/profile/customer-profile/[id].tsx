@@ -5,7 +5,7 @@ import ProfileTabs from './ProfileTabs';
 
 //**Componente de perfil del cliente**
 export default function CustomerProfile() {
-  const { user, logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
+  const { logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
 
 
   return (

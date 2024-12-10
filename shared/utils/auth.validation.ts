@@ -27,10 +27,12 @@ export const validateNombre = (nombre: string): string | null => {
   
   // Validar la contraseña
   export const validatePassword = (password: string): string | null => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{7,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$/;
+  
     if (!password) return "La contraseña es requerida";
-    if (!passwordRegex.test(password)) 
+    if (!passwordRegex.test(password))
       return "La contraseña debe tener al menos 7 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo";
+      
     return null;
   };
   

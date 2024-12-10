@@ -106,6 +106,7 @@ export const loginCustomerService = async (email: string, password: string) => {
   }
 };
 
+
 // **Función para cambiar la contraseña**
 export const changePassword = async (
   oldPassword: string,
@@ -221,5 +222,51 @@ export const removeFavoriteRestaurantService = async (restaurantId: ObjectId) =>
   } catch (error) {
     console.error('Error al eliminar favorito:', error);
     throw error;
+  }
+};
+
+
+// **Servicio para solicitar restablecimiento de contraseña**
+export const requestPasswordResetService = async (email: string): Promise<void> => {
+  try {
+    // Enviar una solicitud POST al backend para solicitar el enlace de restablecimiento
+    const response = await axios.post(`${API_URL}/request-password-reset`, { email });
+
+    console.log('Enlace de restablecimiento enviado:', response.data.message);
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      // Manejar errores específicos del backend
+      throw new Error(error.response?.data?.message || 'Error al solicitar el restablecimiento de contraseña');
+    } else {
+      // Manejar errores generales
+      throw new Error('Error inesperado');
+    }
+  }
+};
+
+// **Servicio para restablecer contraseña**
+export const resetPasswordService = async (
+  userId: string,
+  token: string,
+  newPassword: string
+): Promise<void> => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/password-reset`,
+      {
+        token, // Enviar el token en el cuerpo
+        userId,
+        newPassword,
+      },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    console.log('Contraseña restablecida exitosamente:', response.data.message);
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Error al restablecer la contraseña');
+    } else {
+      throw new Error('Error inesperado');
+    }
   }
 };

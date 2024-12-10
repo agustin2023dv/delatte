@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 
 //**Componente de perfil del administrador**
 export default function AdminProfile() {
-  const { user, logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
+  const {  logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
 
   return (
     <SafeAreaView style={styles.container}>

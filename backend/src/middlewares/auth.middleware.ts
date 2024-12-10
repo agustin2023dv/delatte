@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/User.model';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.replace('Bearer ', ''); // Obtener el token del encabezado Authorization
@@ -24,4 +24,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   } catch (error) {
     return res.status(401).json({ message: 'Token inválido o expirado', error: error instanceof Error ? error.message : 'Error desconocido' });
   }
+};
+
+
+export const extractResetTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Token no proporcionado o inválido' });
+  }
+
+  const token = authHeader.split(' ')[1]; // Extraer el token después de "Bearer"
+  req.body.token = token; // Agregar el token al cuerpo para su uso posterior
+  next();
 };

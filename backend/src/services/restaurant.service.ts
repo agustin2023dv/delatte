@@ -1,7 +1,7 @@
 import { IRestaurant } from "shared/interfaces/IRestaurant";
 import { findUserByEmailService} from "./user.service";
 import { getCoordinatesFromAddress } from "./distance-matrix.service";
-import Restaurant from "../models/Restaurant";
+import Restaurant from "../models/Restaurant.model";
 
 //* Servicio para obtener el restaurante del manager
 export const getRestauranteIdByManagerService = async (managerId: string) => {

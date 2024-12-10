@@ -6,7 +6,7 @@ import { getRestaurantsByManagerService, updateRestaurantService } from '@/app/s
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function RestaurantList() {
-  const { user } = useAuth();
+  const { userId } = useAuth();
   const [restaurants, setRestaurants] = useState<IRestaurant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false); // Controla si estamos editando
@@ -15,8 +15,8 @@ export default function RestaurantList() {
   useEffect(() => {
     async function fetchRestaurants() {
       try {
-        if (user?.id) {
-          const response = await getRestaurantsByManagerService(user.id);
+        if (userId) {
+          const response = await getRestaurantsByManagerService(userId);
           setRestaurants(response);
         }
       } catch (error) {
@@ -26,10 +26,10 @@ export default function RestaurantList() {
       }
     }
 
-    if (user) {
+    if (userId) {
       fetchRestaurants();
     }
-  }, [user]);
+  }, [userId]);
 
   const handleUpdateRestaurant = async (restaurantId: string) => {
     try {

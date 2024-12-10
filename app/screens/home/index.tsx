@@ -1,15 +1,16 @@
 import React from "react";
 import { SafeAreaView, Text } from "react-native";
-import { RestaurantList } from "components/restaurant/RestaurantList";
 import { useAuth } from "@/app/contexts/AuthContext";
+import SearchBar from "components/search/SearchBar";
 
 export default function HomeScreen() {
-  const { user, logout } = useAuth();
+  useAuth();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
         
-        <RestaurantList/>
+        <SearchBar/>
+        
 
     </SafeAreaView>
   );

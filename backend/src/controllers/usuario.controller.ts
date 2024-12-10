@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { addFavoriteRestaurantService, changePasswordService, getUserDataService, loginCustomerService, loginManagerService, registerUserService, removeFavoriteRestaurantService, updateUserDataService } from '../services/user.service';
-import { hashPasswordService } from '../services/auth.service';
+import { addFavoriteRestaurantService,  getUserDataService, loginCustomerService, loginManagerService, registerUserService, removeFavoriteRestaurantService, updateUserDataService } from '../services/user.service';
+import { changePasswordService, hashPasswordService, requestPasswordResetService, resetPasswordService } from '../services/auth.service';
 import { sendEmailService } from '../services/email.service';
-import User from '../models/User';
+import User from '../models/User.model';
 
 //**Controlador para registrar un nuevo usuario**
 export const registrarUsuarioController = async (req: Request, res: Response) => {
@@ -158,6 +158,55 @@ export const cambiarContrasenaController = async (req: Request, res: Response) =
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
+
+//** Controlador para reestablecer la contraseña olvidada */
+
+export const requestPasswordResetController = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'El correo es obligatorio.' });
+    }
+
+    await requestPasswordResetService(email);
+
+    res.status(200).json({ message: 'Se ha enviado un enlace de restablecimiento a tu correo electrónico.' });
+  } catch (error) {
+    console.error('Error en requestPasswordResetController:', error);
+    res.status(500).json({ message: 'Error al solicitar el restablecimiento de contraseña.' });
+  }
+};
+
+
+// Controlador para restablecer la contraseña con el token
+export const resetPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { token, userId, newPassword } = req.body;
+
+    // Validar los parámetros recibidos
+    if (!token || !userId || !newPassword) {
+      return res.status(400).json({ message: 'Faltan datos requeridos.' });
+    }
+
+    // Validar el formato de la nueva contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        message: 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo.',
+      });
+    }
+
+    // Lógica para restablecer la contraseña
+    await resetPasswordService(token, userId, newPassword);
+    res.status(200).json({ message: 'Contraseña restablecida exitosamente.' });
+  } catch (error) {
+    console.error('Error en resetPasswordController:', error);
+    res.status(500).json({ message: 'Error al restablecer la contraseña.' });
+  }
+};
+
+
 
 // **Controlador para agregar un restaurante a favoritos**
 export const addFavoriteRestaurantController = async (req: Request, res: Response) => {

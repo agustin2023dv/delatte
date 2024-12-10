@@ -19,7 +19,7 @@ transporter.verify(function (error, success) {
   if (error) {
     console.error('Error al configurar el transporter de Nodemailer:', error);
   } else {
-    console.log('El transporter de Nodemailer está listo para enviar correos');
+    console.log('El transporter de Nodemailer está listo para enviar correos', success);
   }
 });
 

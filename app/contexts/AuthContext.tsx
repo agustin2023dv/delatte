@@ -1,10 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginCustomerService, loginManagerService, registerUserService, verifyEmail as verifyEmailService } from '../services/user.service';
+import { loginCustomerService, loginManagerService, 
+   registerUserService, verifyEmail as verifyEmailService } from '../services/user.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
 
 interface AuthContextProps {
-  userId: string | null; // Solo almacenar el userId en lugar de todo el usuario
+  userId: string | null; 
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;

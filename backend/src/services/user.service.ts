@@ -1,6 +1,6 @@
-import User from '../models/User';
+import User from '../models/User.model';
 import crypto from 'crypto';
-import { comparePasswordService, hashPasswordService } from './auth.service';
+import { comparePasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
 import { IUser } from 'shared/interfaces/IUser';
 import { sendEmailService } from './email.service';
@@ -132,42 +132,6 @@ export const loginManagerService = async (email: string, password: string) => {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 
   return { token, user };
-};
-
-
-
-//* Servicio para CAMBIAR contraseña
-export const changePasswordService = async (
-  userId: string,
-  oldPassword: string,
-  newPassword: string,
-  confirmNewPassword: string
-) => {
-  // Verificar si la nueva contraseña y su confirmación coinciden
-  if (newPassword !== confirmNewPassword) {
-    throw new Error('La nueva contraseña y la confirmación no coinciden');
-  }
-
-  // Buscar al usuario por su ID
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('Usuario no encontrado');
-  }
-
-  // Verificar la contraseña actual
-  const isMatch = await comparePasswordService(oldPassword, user.password);
-  if (!isMatch) {
-    throw new Error('La contraseña actual es incorrecta');
-  }
-
-  // Hashear la nueva contraseña
-  const hashedNewPassword = await hashPasswordService(newPassword);
-
-  // Actualizar la contraseña en el registro del usuario
-  user.password = hashedNewPassword;
-  await user.save(); // Guardar cambios en la base de datos
-
-  return { message: 'Contraseña actualizada correctamente' };
 };
 
 //**Servicio para obtener los datos del usuario**
