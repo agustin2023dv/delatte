@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IRestaurant } from "shared/interfaces/IRestaurant";
+import { IRestaurant } from "../../../shared/interfaces/IRestaurant";
 
 const RestaurantSchema = new Schema<IRestaurant>({
   nombre: { type: String, required: true },

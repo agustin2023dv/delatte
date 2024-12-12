@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IReview } from 'shared/interfaces/IReview';
+import { IReview } from '../../../shared/interfaces/IReview';
 
 const ReviewSchema = new Schema<IReview>({
   restaurante: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
