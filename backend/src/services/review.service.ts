@@ -1,4 +1,4 @@
-import { IReview } from "shared/interfaces/IReview";
+import { IReview } from "../../../shared/interfaces/IReview";
 import { Review } from "../models/Review.model";
 
 export const createReviewService = async (reviewData: Partial<IReview>) => {

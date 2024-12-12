@@ -2,9 +2,9 @@ import User from '../models/User.model';
 import crypto from 'crypto';
 import { comparePasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
-import { IUser } from 'shared/interfaces/IUser';
 import { sendEmailService } from './email.service';
-import { ObjectId } from 'mongoose';
+import { IUser } from '../../../shared/interfaces/IUser';
+
 
 
 //* Servicio para OBTENER usuario por email
@@ -158,7 +158,7 @@ export const updateUserDataService = async (userData: Partial<IUser>) => {
 
     // Actualizar solo los campos permitidos
     user.phone = userData.phone || user.phone;
-    user.address = userData.address || user.address;
+    user.addresses = userData.addresses || user.addresses;
     user.profileImage = userData.profileImage || user.profileImage;
 
     // Condición especial: La fecha de nacimiento solo puede ser modificada una vez
@@ -176,39 +176,6 @@ export const updateUserDataService = async (userData: Partial<IUser>) => {
   }
 };
 
-// Servicio para agregar un restaurante a favoritos
-export const addFavoriteRestaurantService = async (userId: string, restaurantId: ObjectId) => {
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('Usuario no encontrado');
-  }
-  
-  // Agregar el restaurante a favoritos si no existe ya
-  if (!user.favoriteRestaurants!.includes(restaurantId)) {
-    await user.favoriteRestaurants!.push(restaurantId);
-    await user.save();
-  }
-
-  return user;
-};
-
-// Servicio para eliminar un restaurante de favoritos
-export const removeFavoriteRestaurantService = async (userId: string, restaurantId: ObjectId) => {
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('Usuario no encontrado');
-  }
-
-  // Eliminar el restaurante de favoritos si existe
-
-  if (user.favoriteRestaurants!.includes(restaurantId)) {
-    user.updateOne({
-      $pull: {
-        favoriteRestaurants: restaurantId,
-      }
-    })
-  }
 
 
-  return user;
-};
+

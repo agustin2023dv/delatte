@@ -1,4 +1,4 @@
-import { IRestaurant } from "shared/interfaces/IRestaurant";
+import { IRestaurant } from "../../../shared/interfaces/IRestaurant";
 import { findUserByEmailService} from "./user.service";
 import { getCoordinatesFromAddress } from "./distance-matrix.service";
 import Restaurant from "../models/Restaurant.model";
