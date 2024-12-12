@@ -1,17 +1,19 @@
 import axios from 'axios';
-import { IRestaurant} from 'shared/interfaces/IRestaurant';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem } from '../storage/storage'; 
+import { IRestaurant } from 'shared/interfaces/IRestaurant';
 import { IUser } from 'shared/interfaces/IUser';
 
 const API_URL = 'http://localhost:8081/api/restaurantes';
 
-
-// Llamada para crear el manager y el restaurante
-export const createRestaurantAndManagerService = async (restaurantData: Partial<IRestaurant>, managerData: Partial<IUser>) => {
+// **Llamada para crear el manager y el restaurante**
+export const createRestaurantAndManagerService = async (
+  restaurantData: Partial<IRestaurant>,
+  managerData: Partial<IUser>
+) => {
   try {
-    const response = await axios.post(`${API_URL}/register-restaurant`,{
+    const response = await axios.post(`${API_URL}/register-restaurant`, {
       restaurant: restaurantData,
-      manager: managerData, 
+      manager: managerData,
     });
 
     return response.data; // Devolver los datos de la respuesta del servidor
@@ -21,11 +23,14 @@ export const createRestaurantAndManagerService = async (restaurantData: Partial<
   }
 };
 
-// Llamado para obtener la info de todos los restaurantes
+// **Llamado para obtener la info de todos los restaurantes**
 export const getAllRestaurantsService = async () => {
   try {
-    const token = await AsyncStorage.getItem('token');
-    console.log("Token:", token);
+    const token = await getItem('token'); // Usar almacenamiento centralizado
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
     const response = await axios.get(`${API_URL}/`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -38,8 +43,7 @@ export const getAllRestaurantsService = async () => {
   }
 };
 
-
-// Llamado para obtener información de un restaurante por ID
+// **Llamado para obtener información de un restaurante por ID**
 export const getRestaurantByIdService = async (restaurantId: string) => {
   try {
     const response = await axios.get(`${API_URL}/${restaurantId}`);
@@ -50,10 +54,17 @@ export const getRestaurantByIdService = async (restaurantId: string) => {
   }
 };
 
-// Llamado para actualizar info de un restaurante
-export const updateRestaurantService = async (restaurantId: string, updateData: Partial<IRestaurant>) => {
+// **Llamado para actualizar info de un restaurante**
+export const updateRestaurantService = async (
+  restaurantId: string,
+  updateData: Partial<IRestaurant>
+) => {
   try {
-    const token = await AsyncStorage.getItem('token'); 
+    const token = await getItem('token'); // Usar almacenamiento centralizado
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
     const response = await axios.put(`${API_URL}/${restaurantId}`, updateData, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -66,40 +77,43 @@ export const updateRestaurantService = async (restaurantId: string, updateData: 
   }
 };
 
+// **Llamado para obtener restaurantes gestionados por un manager**
 export const getRestaurantsByManagerService = async (managerId: string) => {
   try {
-
-    const token = await AsyncStorage.getItem('token');
-
+    const token = await getItem('token'); // Usar almacenamiento centralizado
     if (!token) {
       throw new Error('No se encontró un token de autenticación');
     }
 
-    const response = await axios.get(`${API_URL}/manager/${managerId}`,{
+    const response = await axios.get(`${API_URL}/manager/${managerId}`, {
       headers: {
-        Authorization: `Bearer ${token}` 
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Error fetching restaurants:', error);
     throw new Error('Error fetching restaurants');
-  }}; 
-
-
-  // Servicio para obtener reviews de un restaurante en especifico
-export const getReviewsService = async (restaurantId: string) => {
-  const response = await axios.get(`${API_URL}/${restaurantId}/reviews`);
-  return response.data;
+  }
 };
 
+// **Servicio para obtener reviews de un restaurante en específico**
+export const getReviewsService = async (restaurantId: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/${restaurantId}/reviews`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener reviews:', error);
+    throw error;
+  }
+};
 
-// Llamada para buscar restaurantes
+// **Llamada para buscar restaurantes**
 export const searchRestaurantsService = async (query: string) => {
   try {
     const response = await axios.get(`${API_URL}/search`, {
-      params: { q: query }
+      params: { q: query },
     });
     return response.data;
   } catch (error) {
