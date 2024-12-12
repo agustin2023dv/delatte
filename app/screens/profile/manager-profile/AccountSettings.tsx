@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, Button, StyleSheet, Alert, Platform } from 'react-native';
-import { fetchUserDataService, updateUserDataService } from '@/app/services/user.service';
+import { fetchUserDataService, updateUserDataService } from '@/app/services/user/profile.service';
 import { IUser } from 'shared/interfaces/IUser';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
@@ -51,7 +51,7 @@ export default function AccountSettings() {
     const updatedData: Partial<IUser> = {  
       email : managerData.email,
       phone: editingPhone, 
-      address: editingAddress,  
+      addresses: Array.isArray(editingAddress) ? editingAddress : [editingAddress], 
       dob: editingDob,
     };
 

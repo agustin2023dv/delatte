@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { resetPasswordService } from '@/app/services/user.service'; 
+import { resetPasswordService } from '@/app/services/auth/password.service'; 
 
 export default function ResetPassword() {
   const { token, id: userId } = useLocalSearchParams(); // Obtiene los parámetros de la URL

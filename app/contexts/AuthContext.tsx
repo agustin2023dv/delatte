@@ -1,8 +1,16 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginCustomerService, loginManagerService, 
-   registerUserService, verifyEmail as verifyEmailService } from '../services/user.service';
+import { loginCustomerService, loginManagerService } from '@/app/services/auth/login.service'; 
+import { verifyEmail as verifyEmailService } from '@/app/services/auth/password.service';
+import { registerUserService } from '@/app/services/auth/register.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
+
+interface DecodedToken {
+  userId: string;
+  exp: number;
+  iat: number;
+}
+
 
 interface AuthContextProps {
   userId: string | null; 
@@ -28,9 +36,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadUserFromStorage = async () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        const decodedToken: any = jwtDecode(token);
-        setUserId(decodedToken.userId); // Obtener solo el userId del token
-        setIsAuthenticated(true);
+        try {
+          const decodedToken = jwtDecode(token) as DecodedToken;
+          setUserId(decodedToken.userId);
+          setIsAuthenticated(true);
+        } catch {
+          console.error('Token inválido');
+          await AsyncStorage.removeItem('token');
+        }
       }
     };
     loadUserFromStorage();
@@ -39,9 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginCustomer = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { token } = await loginCustomerService(email, password);
+      // Usar destructuración para extraer el token si el servicio devuelve un objeto
+      const response: any = await loginCustomerService(email, password);
+      const token = response.token || response; // Manejar ambos casos: objeto o string
       await AsyncStorage.setItem('token', token);
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken = jwtDecode(token) as DecodedToken;
       setUserId(decodedToken.userId);
       setIsAuthenticated(true);
     } catch (err: any) {
@@ -54,9 +69,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginManager = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { token } = await loginManagerService(email, password);
+      const response: any = await loginManagerService(email, password);
+      const token = response.token || response; // Manejar ambos casos: objeto o string
       await AsyncStorage.setItem('token', token);
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken = jwtDecode(token) as DecodedToken;
       setUserId(decodedToken.userId);
       setIsAuthenticated(true);
     } catch (err: any) {
@@ -80,10 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const verifyEmail = async (emailToken: string) => {
     setIsLoading(true);
     try {
-      const response = await verifyEmailService(emailToken);
-      if (response.success && response.token) {
-        await AsyncStorage.setItem('token', response.token);
-        const decodedToken: any = jwtDecode(response.token);
+      const response: any = await verifyEmailService(emailToken);
+      const token = response.token || response; // Manejar ambos casos
+      if (token) {
+        await AsyncStorage.setItem('token', token);
+        const decodedToken = jwtDecode(token) as DecodedToken;
         setUserId(decodedToken.userId);
         setIsAuthenticated(true);
       } else {
@@ -103,7 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ userId, isAuthenticated, isLoading, error, loginCustomer, loginManager, register, verifyEmail, logout }}>
+    <AuthContext.Provider value={{ userId, isAuthenticated, isLoading, error, 
+    loginCustomer, loginManager, register, verifyEmail , logout }}>
       {children}
     </AuthContext.Provider>
   );

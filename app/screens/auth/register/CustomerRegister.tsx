@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerUserService } from '@/app/services/user.service';
-import { validateNombre, validateApellido, validateEmail, validatePassword, validateConfirmPassword } from '../../../../shared/utils/auth.validation';
+import { registerUserService } from '@/app/services/auth/register.service';
+import { validateNombre, validateApellido, validateEmail, 
+  validatePassword, validateConfirmPassword } from '../../../../shared/utils/auth.validation';
 
 export default function CustomerRegister() {
   const [nombre, setNombre] = useState('');

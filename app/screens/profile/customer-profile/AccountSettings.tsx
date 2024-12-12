@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Modal, TextInput, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, 
+  Modal, TextInput, Button, ScrollView } from 'react-native';
 import { useAuth } from '../../../contexts/AuthContext';
-import { changePassword } from '@/app/services/user.service';
+import { changePasswordService } from '@/app/services/auth/password.service';
+import { fetchUserDataService } from '@/app/services/user/profile.service';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DatePickerComponent from 'components/dataPicker/DatePickerComponent';
+
+interface UserData {
+  nombre: string;
+  email: string;
+  dob: string;
+  phone: string;
+  addresses: Array<string>; 
+  profileImage: string;
+}
+
 
 //**Componente para la configuración de la cuenta del usuario**
 export default function AccountSettings() {
-  const { user } = useAuth(); // Obtener el usuario autenticado del contexto
+  const  user  = useAuth(); // Obtener el usuario autenticado del contexto
 
   // Estados para manejar el modal de cambio de contraseña
   const [isModalVisible, setModalVisible] = useState(false);
@@ -13,10 +27,32 @@ export default function AccountSettings() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); 
+
+  const [error, setError] = useState<string | null>(null);  
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserDataService();
+        setUserData(data);
+      } catch (err: any) {
+        setError(err.message || 'Error inesperado');
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (!userData) {
+    return <Text>Cargando...</Text>; 
+  }
+
   // Función para manejar el cambio de contraseña
   const handleChangePassword = async () => {
     try {
-      await changePassword(oldPassword, newPassword, confirmNewPassword);
+      await changePasswordService(oldPassword, newPassword, confirmNewPassword);
       Alert.alert('Éxito', 'La contraseña ha sido cambiada con éxito');
       setModalVisible(false); // Cerrar el modal después del cambio exitoso
       setOldPassword('');
@@ -28,7 +64,8 @@ export default function AccountSettings() {
   };
 
   const handleToggle2FA = () => {
-    Alert.alert("Autenticación de Dos Factores", "Función para activar/desactivar 2FA."); // Función para activar/desactivar 2FA
+    Alert.alert("Autenticación de Dos Factores", 
+      "Función para activar/desactivar 2FA."); // Función para activar/desactivar 2FA
   };
 
   const handleDisconnect = (platform: string) => {
@@ -39,122 +76,138 @@ export default function AccountSettings() {
     console.log(`Conectar cuenta de ${platform}`); // Función para conectar cuentas vinculadas
   };
 
-  // Estado de las cuentas conectadas (ejemplo)
+  // Estado de las cuentas conectadas 
   const connectedAccounts = {
     google: true,
     facebook: false,
-    twitter: false,
+    twitter: true,
   };
 
   return (
-    <View style={styles.container}>
-      {/* Información de la cuenta */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account Info</Text>
-        <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.profileImage} />
-        <Text style={styles.info}>Nombre: {user?.fullName || 'Full Name'}</Text>
-        <Text style={styles.info}>Email: {user?.email || 'useremail@example.com'}</Text>
-        <Text style={styles.info}>Date of Birth: {user?.dob || '01/01/1990'}</Text>
-        <Text style={styles.info}>Phone: {user?.phone || '+032020202'}</Text>
-      </View>
+    <>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.container}>
+            {/* Información de la cuenta */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Información personal</Text>
+                <Image 
+                    source={{ uri: userData.profileImage ? userData.profileImage : 'https://via.placeholder.com/100' }} 
+                    style={styles.profileImage} 
+                  />
+                <Text style={styles.info}>Nombre: {userData.nombre}</Text>
+                <Text style={styles.info}>Email: {userData.email}</Text>
+              
+              <Text style={styles.info}>
+              Fecha de nacimiento: {selectedDate ? selectedDate.toDateString() : userData.dob}
+              </Text>
+              <DatePickerComponent
+                date={selectedDate || (userData.dob ? new Date(userData.dob) : null)}
+                onDateChange={setSelectedDate}
+              />
+              <Text style={styles.info}>Télefono: {userData.phone}</Text>
+            </View>
 
-      {/* Sección de seguridad */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Security</Text>
-        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-          <Text style={styles.buttonText}>Change Password</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleToggle2FA}>
-          <Text style={styles.buttonText}>2-Step Verification</Text>
-        </TouchableOpacity>
-      </View>
+            {/* Lista de direcciones */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Direcciones</Text>
+                {userData.addresses.length > 0 ? (
+                  userData.addresses.map((address, index) => (
+                    <Text key={index} style={styles.info}>
+                      . {address}
+                    </Text>
+                  ))
+                ) : (
+                  <Text style={styles.info}>No hay direcciones disponibles</Text>
+                )}
+              </View>
 
-      {/* Sección de cuentas conectadas */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Connected Accounts</Text>
-        {/* Google */}
-        <View style={styles.account}>
-          <Text>Google</Text>
-          {connectedAccounts.google ? (
-            <TouchableOpacity style={styles.disconnectButton} onPress={() => handleDisconnect('Google')}>
-              <Text style={styles.buttonText}>Disconnect</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.connectButton} onPress={() => handleConnect('Google')}>
-              <Text style={styles.buttonText}>Connect</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            {/* Sección de seguridad */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Seguridad</Text>
 
-        {/* Facebook */}
-        <View style={styles.account}>
-          <Text>Facebook</Text>
-          {connectedAccounts.facebook ? (
-            <TouchableOpacity style={styles.disconnectButton} onPress={() => handleDisconnect('Facebook')}>
-              <Text style={styles.buttonText}>Disconnect</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.connectButton} onPress={() => handleConnect('Facebook')}>
-              <Text style={styles.buttonText}>Connect</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+                  <Text style={styles.buttonText}>Cambiar contraseña</Text>
+                </TouchableOpacity>
 
-        {/* Twitter */}
-        <View style={styles.account}>
-          <Text>Twitter</Text>
-          {connectedAccounts.twitter ? (
-            <TouchableOpacity style={styles.disconnectButton} onPress={() => handleDisconnect('Twitter')}>
-              <Text style={styles.buttonText}>Disconnect</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.connectButton} onPress={() => handleConnect('Twitter')}>
-              <Text style={styles.buttonText}>Connect</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+                <TouchableOpacity style={styles.button} onPress={handleToggle2FA}>
+                  <Text style={styles.buttonText}>2-Step Verification</Text>
+                </TouchableOpacity>
+                
+              </View>
 
-      {/* Modal para cambiar la contraseña */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Cambiar Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña Actual"
-            secureTextEntry
-            value={oldPassword}
-            onChangeText={setOldPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Nueva Contraseña"
-            secureTextEntry
-            value={newPassword}
-            onChangeText={setNewPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar Nueva Contraseña"
-            secureTextEntry
-            value={confirmNewPassword}
-            onChangeText={setConfirmNewPassword}
-          />
-          <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
-          <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} />
-        </View>
-      </Modal>
-    </View>
+            {/* Sección de cuentas conectadas */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Connected Accounts</Text>
+                {/* Cuentas conectadas */}
+                {Object.entries(connectedAccounts).map(([platform, isConnected]) => (
+                  <View key={platform} style={styles.account}>
+                    <Text>{platform.charAt(0).toUpperCase() + platform.slice(1)}</Text>
+                    <TouchableOpacity
+                      style={isConnected ? styles.disconnectButton : styles.connectButton}
+                      onPress={() =>
+                        isConnected ? handleDisconnect(platform) : handleConnect(platform)
+                      }
+                    >
+                      <Text style={styles.buttonText}>
+                        {isConnected ? 'Disconnect' : 'Connect'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+
+            {/* Modal para cambiar la contraseña */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isModalVisible}
+              onRequestClose={() => setModalVisible(false)}
+              >
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Cambiar Contraseña</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contraseña Actual"
+                  secureTextEntry
+                  value={oldPassword}
+                  onChangeText={setOldPassword}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nueva Contraseña"
+                  secureTextEntry
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirmar Nueva Contraseña"
+                  secureTextEntry
+                  value={confirmNewPassword}
+                  onChangeText={setConfirmNewPassword}
+                />
+                <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
+                <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} />
+              </View>
+            </Modal>
+
+          </View>
+
+          
+        </ScrollView>
+        
+      </SafeAreaView>
+      
+    </>
   );
 }
 
 // Estilos para el componente AccountSettings
 const styles = StyleSheet.create({
+  scrollContainer: {
+    paddingBottom: 20, 
+  },
   container: {
     flex: 1,
     padding: 20,

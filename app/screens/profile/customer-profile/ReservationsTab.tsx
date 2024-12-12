@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker'; 
+
 import { fetchUserReservations, cancelReservation, modifyReservation } from '../../../services/reservation.service'; 
 import { validateFecha, validateHorario, validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
 
@@ -107,13 +107,7 @@ const ReservationsTab = () => {
           <Text>{`Fecha seleccionada: ${selectedDate.toDateString()}`}</Text>
           <Button title="Seleccionar Fecha" onPress={() => setShowDatePicker(true)} />
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={selectedDate}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-            />)}
+     
           <TextInput
             style={styles.input}
             value={editingReservation.horario}
