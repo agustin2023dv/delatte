@@ -1,21 +1,27 @@
 import { Stack } from "expo-router";
+import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from "./contexts/AuthContext";
 
-// Layout que envuelve las pantallas de autenticación y provee el contexto de autenticación
 export default function HomeLayout() {
   return (
-    <AuthProvider>
-      {/* Configuración de navegación entre pantallas */}
-      <Stack screenOptions={{ headerShown: false }}>
-        {/* Definición de las pantallas disponibles en el stack */}
-        <Stack.Screen name="index"/>
-        <Stack.Screen name="screens/auth/Login" options={{title:'Login'}}/>
-        <Stack.Screen name="screens/auth/Register" options={{title:'Register'}}/>
-        <Stack.Screen name="screens/auth/VerifyEmail" options={{title:'VerifyEmail'}}/>
-        <Stack.Screen name="screens/auth/ForgotPassword" options={{title:'ForgotPassword'}}/>
-        <Stack.Screen name="screens/auth/ResetPassword" options={{title:'ResetPassword'}}/>
-        <Stack.Screen name="screens/home" options={{title:'Home'}} />
-      </Stack>
-    </AuthProvider>
+    <NavigationContainer>
+        <AuthProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="screens/auth/login" options={{ title: "Login" }} />
+            <Stack.Screen name="screens/auth/register" options={{ title: "Register" }} />
+            <Stack.Screen name="screens/auth/VerifyEmail" options={{ title: "VerifyEmail" }} />
+            <Stack.Screen name="screens/auth/forgotPassword/ForgotPassword" options={{ title: "ForgotPassword" }} />
+            <Stack.Screen name="screens/auth/forgotPassword/ResetPassword" options={{ title: "ResetPassword" }} />
+            <Stack.Screen
+              name="screens/addresses/SavedAddresses"
+              options={{ title: "Saved Addresses" }}
+            />
+            <Stack.Screen name="screens/home" options={{ title: "Home" }} />
+          </Stack>
+        </AuthProvider>
+
+
+    </NavigationContainer>
+    
   );
 }

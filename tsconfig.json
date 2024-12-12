@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
+      "shared/*": ["shared/*"], 
       "@/app/*": [
         "app/*"
       ]
