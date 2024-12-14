@@ -1,12 +1,13 @@
-export const setItem = async (key: string, value: string) => {
-    localStorage.setItem(key, value);
-  };
-  
-  export const getItem = async (key: string): Promise<string | null> => {
-    return localStorage.getItem(key);
-  };
-  
-  export const removeItem = async (key: string) => {
-    localStorage.removeItem(key);
-  };
-  
+
+// A MEJORAR --> SE DEBERIA ENCRIPTAR
+export const setItem = (key: string, value: string) => {
+  sessionStorage.setItem(key, value);
+};
+
+export const getItem = (key: string): string | null => {
+  return sessionStorage.getItem(key);
+};
+
+export const removeItem = (key: string) => {
+  sessionStorage.removeItem(key);
+};
