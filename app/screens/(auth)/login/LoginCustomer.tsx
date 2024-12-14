@@ -27,7 +27,7 @@ export default function LoginCustomer() {
     try {
       setIsLoading(true);
       await auth.loginCustomer(email, password); // Llamada al método del contexto para iniciar sesión
-      // navigation.navigate('Home'); // Redirigir al home después del login
+
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión como Customer.');
     } finally {
@@ -61,7 +61,7 @@ export default function LoginCustomer() {
           <>
             <Button title="Iniciar Sesión" onPress={handleLogin} />
             <View style={styles.buttonSpacing}>
-              <Link href="/screens/auth/forgotPassword/ForgotPassword">
+              <Link href="/screens/forgotPassword/ForgotPassword">
                 ¿Olvidaste tu contraseña?
               </Link>
             
