@@ -5,7 +5,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { changePasswordService } from '@/app/services/auth/password.service';
 import { fetchUserDataService } from '@/app/services/user/profile.service';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DatePickerComponent from 'components/dataPicker/DatePickerComponent';
 
 interface UserData {
   nombre: string;
@@ -101,10 +100,7 @@ export default function AccountSettings() {
               <Text style={styles.info}>
               Fecha de nacimiento: {selectedDate ? selectedDate.toDateString() : userData.dob}
               </Text>
-              <DatePickerComponent
-                date={selectedDate || (userData.dob ? new Date(userData.dob) : null)}
-                onDateChange={setSelectedDate}
-              />
+          
               <Text style={styles.info}>Télefono: {userData.phone}</Text>
             </View>
 

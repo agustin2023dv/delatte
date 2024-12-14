@@ -5,8 +5,9 @@
       "dom",
       "es2017"
     ],
-    "typeRoots": ["./node_modules/@types"]
-    ,
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "jsx": "react-native",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -15,7 +16,9 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "shared/*": ["shared/*"], 
+      "shared/*": [
+        "shared/*"
+      ],
       "@/app/*": [
         "app/*"
       ]
@@ -24,9 +27,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "types.d.ts" 
+    "types.d.ts"
   ],
   "exclude": [
     "node_modules"
