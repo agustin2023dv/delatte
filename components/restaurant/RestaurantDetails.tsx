@@ -1,4 +1,5 @@
 import { getRestaurantByIdService } from '@/app/services/restaurant.service';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { View,SafeAreaView,Text,StyleSheet } from 'react-native';
 import { IRestaurant } from 'shared/interfaces/IRestaurant';
@@ -27,20 +28,20 @@ export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
         return <Text>Cargando...</Text>;
     }
 
-    return (<>
-            
-            <SafeAreaView >
+    return (
+        <>
+          <SafeAreaView>
             <View>
-                {restaurantInfo &&
-                    Object.entries(restaurantInfo).map(([key, value]) => (
-                        <Text key={key} >
-                            {`${key}: ${JSON.stringify(value)}`}
+            {restaurantInfo &&
+                    Object.entries(restaurantInfo).map(([key, value], index) => (
+                        <Text key={`${key}-${index}`}>
+                        {`${key}: ${JSON.stringify(value)}`}
                         </Text>
                     ))}
             </View>
-        </SafeAreaView>
-    
-            </>)
+          </SafeAreaView>
+        </>
+      );
 } 
 
 const styles = StyleSheet.create({})
