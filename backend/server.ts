@@ -25,8 +25,18 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+
+const corsOptions = {
+  origin: 'http://localhost:8082', // Permitir solicitudes desde el frontend
+  methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
+  credentials: true, 
+};
+
+
 // Middlewares globales
-app.use(cors()); // Habilitar CORS para aceptar solicitudes desde otros dominios
+app.use(cors(corsOptions)); // Habilitar CORS para aceptar solicitudes desde otros dominios
+
+
 app.use(express.json()); // Permitir recibir solicitudes en formato JSON
 
 // Definir las rutas
