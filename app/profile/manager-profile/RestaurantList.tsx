@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Text, StyleSheet, Button, View, TextInput } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
-import { IRestaurant } from '../../../../shared/interfaces/IRestaurant';
-import { getRestaurantsByManagerService, updateRestaurantService } from '@/app/services/restaurant.service';
-import { useAuth } from '../../../contexts/AuthContext';
+import { IRestaurant } from '../../../shared/interfaces/IRestaurant';
+import { getRestaurantsByManagerService, updateRestaurantService } from 'services/restaurant.service';
+import { useAuth } from 'contexts/AuthContext';
 
 export default function RestaurantList() {
   const { userId } = useAuth();

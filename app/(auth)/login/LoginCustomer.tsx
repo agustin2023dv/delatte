@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../../../contexts/AuthContext';
 import { validateEmail, validatePassword } from 'shared/utils/auth.validation';
-import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
+import { useAuth } from 'contexts/AuthContext';
+import { loginCustomerService } from 'services/auth/login.service';
 
 export default function LoginCustomer() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const auth = useAuth(); // Obtener el contexto completo
-  const navigation = useNavigation(); // Hook de navegación
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +25,7 @@ export default function LoginCustomer() {
 
     try {
       setIsLoading(true);
-      await auth.loginCustomer(email, password); // Llamada al método del contexto para iniciar sesión
+      await loginCustomerService(email, password); // Llamada al método del contexto para iniciar sesión
 
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión como Customer.');

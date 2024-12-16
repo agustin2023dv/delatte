@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { searchRestaurantsService } from '@/app/services/restaurant.service';
 import { RestaurantList } from 'components/restaurant/RestaurantList';
 import { IRestaurant } from 'shared/interfaces/IRestaurant';
+import { searchRestaurantsService } from 'services/restaurant.service';
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = React.useState('');

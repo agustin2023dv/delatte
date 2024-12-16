@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerUserService } from '@/app/services/auth/register.service';
 import { validateNombre, validateApellido, validateEmail, 
-  validatePassword, validateConfirmPassword } from '../../../../shared/utils/auth.validation';
+  validatePassword, validateConfirmPassword } from '../../../shared/utils/auth.validation';
+import { registerUserService } from 'services/auth/register.service';
 
 export default function CustomerRegister() {
   const [nombre, setNombre] = useState('');
@@ -20,7 +20,8 @@ export default function CustomerRegister() {
     const cPasswordError = validateConfirmPassword(password, cPassword);
 
     if (nombreError || apellidoError || emailError || passwordError || cPasswordError) {
-      Alert.alert('Errores en el formulario', `${nombreError || ''}\n${apellidoError || ''}\n${emailError || ''}\n${passwordError || ''}\n${cPasswordError || ''}`);
+      Alert.alert('Errores en el formulario', `${nombreError || ''}\n${apellidoError || 
+        ''}\n${emailError || ''}\n${passwordError || ''}\n${cPasswordError || ''}`);
       return;
     }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
-
-import { fetchUserReservations, cancelReservation, modifyReservation } from '../../../services/reservation.service'; 
+import { cancelReservation, fetchUserReservations, modifyReservation } from 'services/reservation.service';
 import { validateFecha, validateHorario, validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
 
 const ReservationsTab = () => {

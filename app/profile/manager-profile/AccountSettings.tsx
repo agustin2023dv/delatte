@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, Button, StyleSheet, Alert, Platform } from 'react-native';
-import { fetchUserDataService, updateUserDataService } from '@/app/services/user/profile.service';
 import { IUser } from 'shared/interfaces/IUser';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
+import { fetchUserDataService, updateUserDataService } from 'services/user/profile.service';
 
 export default function AccountSettings() {
   const user = useAuth();

@@ -1,7 +1,7 @@
+import { useAuth } from 'contexts/AuthContext';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../../../contexts/AuthContext';
 
 //**Componente de perfil del administrador**
 export default function AdminProfile() {

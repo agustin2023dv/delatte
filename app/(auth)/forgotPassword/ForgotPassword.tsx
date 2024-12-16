@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { requestPasswordResetService } from '@/app/services/auth/password.service'; 
+import { requestPasswordResetService } from 'services/auth/password.service';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');

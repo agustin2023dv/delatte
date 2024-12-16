@@ -1,7 +1,7 @@
-import { getRestaurantByIdService } from '@/app/services/restaurant.service';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { View,SafeAreaView,Text,StyleSheet } from 'react-native';
+import { getRestaurantByIdService } from 'services/restaurant.service';
 import { IRestaurant } from 'shared/interfaces/IRestaurant';
 
 

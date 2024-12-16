@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { validateEmail, validatePassword } from '../../../../shared/utils/auth.validation';
+import { validateEmail, validatePassword } from '../../../shared/utils/auth.validation';
 import { Link } from 'expo-router';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
+import { loginManagerService } from 'services/auth/login.service';
 
 export default function LoginManager() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const auth = useAuth();// Obtener la función del contexto para actualizar el estado de autenticación
+  const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +25,7 @@ export default function LoginManager() {
   
     try {
       setIsLoading(true);
-      await auth.loginManager(email, password); // Llamada al método del contexto para iniciar sesión
+      await loginManagerService(email, password); // Llamada al método del contexto para iniciar sesión
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión como Customer.');
     } finally {
@@ -57,7 +58,7 @@ export default function LoginManager() {
           <>
             <Button title="Iniciar Sesión" onPress={handleLogin} />
               <View style={styles.buttonSpacing}>
-                <Link href="/screens/auth/forgotPassword/ForgotPassword">
+                <Link href="../forgotPassword/ForgotPassword">
                   ¿Olvidaste tu contraseña?
                 </Link>
               

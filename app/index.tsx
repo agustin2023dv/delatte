@@ -1,9 +1,9 @@
 import {  Text, View } from "react-native";
 import { Link } from "expo-router";
-import { useAuth } from "./contexts/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LogOutButton from "components/buttons/LogOutButton";
 import React from "react";
+import { useAuth } from "contexts/AuthContext";
 
 // Componente principal que muestra enlaces de navegación
 export default function Home() {
@@ -24,10 +24,10 @@ export default function Home() {
     return (
       <View>
         {/* Enlace para navegar a la pantalla de login */}
-        <Link href="../screens/login">Inicia sesión</Link>
+        <Link href="../login">Inicia sesión</Link>
         
         {/* Enlace para navegar a la pantalla de registro */}
-        <Link href="../screens/register">Regístrate</Link>
+        <Link href="../register">Regístrate</Link>
         
         {/* Texto que indica la pantalla actual */}
         <Text>Home screen</Text>

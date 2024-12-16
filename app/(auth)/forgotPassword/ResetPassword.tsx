@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { resetPasswordService } from '@/app/services/auth/password.service'; 
+import { resetPasswordService } from 'services/auth/password.service';
 
 export default function ResetPassword() {
   const { token, id: userId } = useLocalSearchParams(); // Obtiene los parámetros de la URL
@@ -16,7 +16,7 @@ export default function ResetPassword() {
   useEffect(() => {
     if (!token || !userId) {
       Alert.alert('Error', 'Faltan datos para restablecer la contraseña.');
-      router.replace('/screens/auth/login'); // Redirige al login si faltan parámetros
+      router.replace('../login'); // Redirige al login si faltan parámetros
     }
   }, [token, userId]);
 
@@ -35,7 +35,7 @@ export default function ResetPassword() {
       setIsLoading(true);
       await resetPasswordService(userId as string, token as string, newPassword); // Llama al servicio que maneja la lógica de restablecimiento
       Alert.alert('Éxito', 'Tu contraseña ha sido restablecida correctamente.');
-      router.replace('/screens/auth/login'); // Redirige al login tras el éxito
+      router.replace('../login'); // Redirige al login tras el éxito
     } catch (err: any) {
       setError(err.message || 'Error al restablecer la contraseña.');
     } finally {

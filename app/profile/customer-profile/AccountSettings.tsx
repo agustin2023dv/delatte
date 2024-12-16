@@ -1,10 +1,11 @@
+import { useAuth } from 'contexts/AuthContext';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, 
   Modal, TextInput, Button, ScrollView } from 'react-native';
-import { useAuth } from '../../../contexts/AuthContext';
-import { changePasswordService } from '@/app/services/auth/password.service';
-import { fetchUserDataService } from '@/app/services/user/profile.service';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { changePasswordService } from 'services/auth/password.service';
+import { fetchUserDataService } from 'services/user/profile.service';
 
 interface UserData {
   nombre: string;
