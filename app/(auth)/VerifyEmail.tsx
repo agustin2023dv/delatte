@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 
 //**Componente para verificar el email después del registro**
 export default function VerifyEmail() {
@@ -37,9 +37,13 @@ export default function VerifyEmail() {
             {message}
           </Text>
           {status === 'success' && (
-            <Text style={styles.linkText}>
+            <>
+              <Text style={styles.linkText}>
               ¡Tu email ha sido verificado con éxito!
-            </Text>
+              </Text>
+              <Link href={"/(auth)/login"}></Link>
+            </>
+            
           )}
         </View>
       )}

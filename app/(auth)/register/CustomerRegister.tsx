@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateNombre, validateApellido, validateEmail, 
   validatePassword, validateConfirmPassword } from '../../../shared/utils/auth.validation';
 import { registerUserService } from 'services/auth/register.service';
+import { router } from 'expo-router';
 
 export default function CustomerRegister() {
   const [nombre, setNombre] = useState('');
@@ -28,12 +29,13 @@ export default function CustomerRegister() {
     try {
       const data = await registerUserService(nombre, apellido, email, password);
       Alert.alert('Registro Exitoso', `Usuario registrado con éxito: ${data.user.nombre}`);
+      router.replace("/(auth)/login");
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error', error.message);
       } else {
         Alert.alert('Error', 'Ocurrió un error desconocido.');
-      }
+      } 
     }
   };
 

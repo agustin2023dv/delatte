@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateEmail, validatePassword } from 'shared/utils/auth.validation';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAuth } from 'contexts/AuthContext';
 import { loginCustomerService } from 'services/auth/login.service';
 
@@ -27,6 +27,7 @@ export default function LoginCustomer() {
       setIsLoading(true);
       await loginCustomerService(email, password); // Llamada al método del contexto para iniciar sesión
 
+      router.replace("../customer-profile/[id]");
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión como Customer.');
     } finally {
@@ -60,7 +61,7 @@ export default function LoginCustomer() {
           <>
             <Button title="Iniciar Sesión" onPress={handleLogin} />
             <View style={styles.buttonSpacing}>
-              <Link href="/screens/forgotPassword/ForgotPassword">
+              <Link href="/forgotPassword/ForgotPassword">
                 ¿Olvidaste tu contraseña?
               </Link>
             

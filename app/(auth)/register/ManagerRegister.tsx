@@ -6,8 +6,8 @@ import {validateApellido,validateNombre,
   validatePassword,validateRestaurantName,
   validateRestaurantPostCode,validateRestaurantAddress
 } from '@/app/../shared/utils/auth.validation';
-import { Redirect } from 'expo-router';
 import { createRestaurantAndManagerService } from 'services/restaurant.service';
+import { router } from 'expo-router';
 
 export default function ManagerRegister() {
   const [nombre, setNombre] = useState('');
@@ -48,7 +48,8 @@ export default function ManagerRegister() {
         emailContacto: email
       }, {  nombre: nombre, apellido:apellido, email: email,password: password });
       
-      return <Redirect href="./"/>
+        router.replace("/(auth)/login");
+      
 
     } catch (error) {
       if (error instanceof Error) {

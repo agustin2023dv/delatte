@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateEmail, validatePassword } from '../../../shared/utils/auth.validation';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAuth } from 'contexts/AuthContext';
 import { loginManagerService } from 'services/auth/login.service';
 
@@ -25,9 +25,10 @@ export default function LoginManager() {
   
     try {
       setIsLoading(true);
-      await loginManagerService(email, password); // Llamada al método del contexto para iniciar sesión
+      await loginManagerService(email, password); 
+      router.replace("./manager-profile/[id]");
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión como Customer.');
+      setError(err.message || 'Error al iniciar sesión.');
     } finally {
       setIsLoading(false);
     }
