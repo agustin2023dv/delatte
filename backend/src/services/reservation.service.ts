@@ -1,6 +1,8 @@
 import Reservation from '../models/Reservation.model';
 import { IReservation } from '../../../shared/interfaces/IReservation';
 import { getRestauranteIdByManagerService } from './restaurant.service';
+import { findUserByEmailService, findUserByIdService } from './user.service';
+import { IUser } from '../../../shared/interfaces/IUser';
 
 // Servicio para crear una reserva
 export const createReservationService = async (reservationData: IReservation) => {
@@ -46,8 +48,7 @@ export const getAllReservationsService = async () => {
   }
 };
 
-// Servicio para obtener todas las reservas de un cliente o manager
-export const getReservationsByRoleService = async (userId: string, role: string) => {
+export const getReservationsByIdService = async (userId: string, role: string) => {
   let reservations;
 
   if (role === 'customer') {
@@ -58,14 +59,14 @@ export const getReservationsByRoleService = async (userId: string, role: string)
     const restauranteId = await getRestauranteIdByManagerService(userId);
     reservations = await Reservation.find({ restaurante: restauranteId }).populate('cliente', 'nombre email');
   } else {
-    throw new Error('Rol no válido.'); // Manejo de error para roles no válidos
+    throw new Error('Rol no válido o usuario no encontrado.');
   }
 
-  // Si no hay reservas, retornar un mensaje claro
+  // Si no hay reservas
   if (!reservations || reservations.length === 0) {
     return { message: 'No hay reservas disponibles.' };
   }
 
-  // Retornar las reservas encontradas
   return reservations;
 };
+

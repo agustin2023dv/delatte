@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
 import { cancelReservation, fetchUserReservations, modifyReservation } from 'services/reservation.service';
+import { IReservation } from 'shared/interfaces/IReservation';
 import { validateFecha, validateHorario, validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
 
 const ReservationsTab = () => {
-  const [futureReservations, setFutureReservations] = useState([]); // Reservas futuras
-  const [pastReservations, setPastReservations] = useState([]); // Reservas pasadas
+  const [futureReservations, setFutureReservations] = useState<IReservation[]>([]);
+  const [pastReservations, setPastReservations] = useState<IReservation[]>([]);
   const [loading, setLoading] = useState(true); // Estado de carga
   const [editingReservation, setEditingReservation] = useState<any | null>(null); // Reserva en edición
 
@@ -19,23 +20,34 @@ const ReservationsTab = () => {
     const fetchReservations = async () => {
       try {
         const response = await fetchUserReservations();
-        const reservations = response.data;
-
-        const future = reservations.filter((reservation: { pasada: Boolean }) => !reservation.pasada);
-        const past = reservations.filter((reservation: { pasada: Boolean }) => reservation.pasada);
-
+  
+        // Verifica si la respuesta contiene un array de reservas
+        const reservations: IReservation[] = Array.isArray(response) ? response : [];
+  
+        if (reservations.length === 0) {
+          console.log("No hay reservas disponibles");
+          setFutureReservations([]);
+          setPastReservations([]);
+          return;
+        }
+  
+        // Filtrar las reservas (futuras y pasadas)
+        const future = reservations.filter((reservation) => !reservation.pasada);
+        const past = reservations.filter((reservation) => reservation.pasada);
+  
         setFutureReservations(future);
         setPastReservations(past);
       } catch (error) {
-        console.error('Error al obtener las reservas:', error);
-        Alert.alert('Error', 'No se pudieron cargar las reservas');
+        console.error("Error al obtener las reservas:", error);
+        Alert.alert("Error", "No se pudieron cargar las reservas");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchReservations();
   }, []);
+  
 
   // Función para cancelar una reserva
   const handleCancelReservation = async (reservationId: string) => {
@@ -163,7 +175,6 @@ const ReservationsTab = () => {
           <Text style={styles.title}>Reservas Futuras</Text>
           <FlatList
             data={futureReservations}
-            keyExtractor={item => item._id}
             renderItem={renderReservationItem}
             ListEmptyComponent={<Text>No tienes reservas futuras.</Text>}
           />
@@ -172,7 +183,6 @@ const ReservationsTab = () => {
           <Text style={styles.title}>Reservas Pasadas</Text>
           <FlatList
             data={pastReservations}
-            keyExtractor={item => item._id}
             renderItem={renderReservationItem}
             ListEmptyComponent={<Text>No tienes reservas pasadas.</Text>}
           />

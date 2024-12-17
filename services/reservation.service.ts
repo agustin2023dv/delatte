@@ -10,7 +10,7 @@ const API_URL =
     : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // Obtener reservas del usuario autenticado
-export const fetchUserReservations = async (role: string) => {
+export const fetchUserReservations = async () => {
   const token = await getItem("token");
   try {
     
@@ -18,7 +18,6 @@ const response = await axios.get(`${API_URL}/reservas/bookings`, {
   headers: {
     Authorization: `Bearer ${token}`, 
   },
-  params: { role }, 
 });
     return response.data; 
   } catch (error) {

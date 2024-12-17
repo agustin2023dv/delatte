@@ -5,7 +5,7 @@ import {
   getAllReservationsService, 
   updateReservationService, 
   cancelReservationService, 
-  getReservationsByRoleService 
+  getReservationsByIdService
 } from '../services/reservation.service';
 
 //* Controlador para CREAR una reserva
@@ -22,25 +22,27 @@ export const createReservationController = async (req: Request, res: Response) =
 //* Controlador para ver las reservas del usuario (cliente o manager)
 export const getUserReservationsController = async (req: Request, res: Response) => {
   try {
-    const { userId, role } = req.query;
+    const user = (req as any).user; // Obtenemos el usuario autenticado desde el middleware
 
-    if (!userId || !role) {
-      return res.status(400).json({ message: "Faltan parámetros: userId y role" });
+    if (!user) {
+      return res.status(401).json({ message: "No se encontró un usuario autenticado." });
     }
 
-    const result = await getReservationsByRoleService(userId as string, role as string);
+    // Llamada al servicio pasando user._id y user.role
+    const result = await getReservationsByIdService(user._id.toString(), user.role);
 
-    // Verificar si result es un mensaje en lugar de reservas
+    // Verificar si result contiene un mensaje en lugar de reservas
     if (result.message) {
-      return res.status(200).json({ message: result.message }); // Responder con un mensaje
+      return res.status(200).json({ message: result.message });
     }
 
-    return res.status(200).json(result); // Responder con las reservas
+    return res.status(200).json(result); // Retornar las reservas
   } catch (error) {
     console.error("Error al obtener reservas:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
+
 //*Controlador para CANCELAR una reserva
 export const cancelReservationController = async (req: Request, res: Response) => {
   try {

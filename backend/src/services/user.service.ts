@@ -4,12 +4,28 @@ import { comparePasswordService } from './auth.service';
 import jwt from 'jsonwebtoken';
 import { sendEmailService } from './email.service';
 import { IUser } from '../../../shared/interfaces/IUser';
+import mongoose from 'mongoose';
 
 
 
 //* Servicio para OBTENER usuario por email
 export const findUserByEmailService = async (email: string) => {
   return await User.findOne({ email }); // Buscar usuario por email en la base de datos
+};
+
+export const findUserByIdService = async (userId: string) => {
+  try {
+    // Convertir el ID de string a ObjectId
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    // Buscar el usuario por su _id
+    const user = await User.findOne({ _id: objectId });
+
+    return user;
+  } catch (error) {
+    console.error("Error al buscar el usuario por ID:", error);
+    throw error;
+  }
 };
 
 
