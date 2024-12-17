@@ -10,6 +10,7 @@ const RestaurantSchema = new Schema<IRestaurant>({
   telefonos: [{ type: String, default: [] }],
   emailContacto: { type: String, match: /.+\@.+\..+/ },
   logo: { type: String, default: 'Logo restaurante' },
+  descripcion: {type:String, default: "No hay descripcion"},
   galeriaFotos: [{ type: String, default: [] }],
   calificacion: { type: Number, default: 1, min: 1, max: 5 },
   horarios: [{

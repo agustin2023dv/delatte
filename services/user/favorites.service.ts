@@ -1,8 +1,6 @@
 import { getItem } from 'storage/storage';
 import axios from 'axios';
-import { ObjectId } from 'mongoose';
 import { Platform } from 'react-native';
-
 
 // Detectar entorno (web o mobile)
 const API_URL =
@@ -10,37 +8,49 @@ const API_URL =
     ? process.env.EXPO_PUBLIC_API_URL_WEB
     : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
+export const getUserFavoritesService = async () => {
+      const token = await getItem("token");
+    
+      if (!token) throw new Error("No se encontró un token de autenticación");
+    
+      const response = await axios.get(`${API_URL}/favorites`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    
+      return response.data.favorites;
+    };
+
 // **Servicio para agregar restaurante a favoritos**
-export const addFavoriteRestaurantService = async (restaurantId: ObjectId) => {
+export const addFavoriteRestaurantService = async (restaurantId: string) => {
   try {
-    const token = await getItem('token'); // Usar almacenamiento centralizado
+    const token = await getItem('token'); // Obtener token del almacenamiento
     if (!token) throw new Error('No se encontró un token de autenticación');
 
     const response = await axios.post(
       `${API_URL}/favorites`,
-      { restaurantId },
-      { headers: { Authorization: `Bearer ${token}` } } // Incluir el token en los headers
+      { restaurantId }, // Pasar ID del restaurante como string
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data; // Retornar la respuesta del backend
   } catch (error) {
-    console.error('Error al agregar favorito:', error);
-    throw error; // Lanzar el error para manejarlo en el frontend
+    console.error('Error al agregar favorito:');
+    throw error;
   }
 };
 
 // **Servicio para eliminar restaurante de favoritos**
-export const removeFavoriteRestaurantService = async (restaurantId: ObjectId) => {
+export const removeFavoriteRestaurantService = async (restaurantId: string) => {
   try {
-    const token = await getItem('token'); // Usar almacenamiento centralizado
+    const token = await getItem('token'); // Obtener token del almacenamiento
     if (!token) throw new Error('No se encontró un token de autenticación');
 
     const response = await axios.delete(`${API_URL}/favorites`, {
-      data: { restaurantId }, // Incluir el restaurante en el cuerpo de la solicitud
-      headers: { Authorization: `Bearer ${token}` } // Incluir el token en los headers
+      data: { restaurantId }, // Incluir el ID del restaurante en el cuerpo
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data; // Retornar la respuesta del backend
   } catch (error) {
-    console.error('Error al eliminar favorito:', error);
-    throw error; // Lanzar el error para manejarlo en el frontend
+    console.error('Error al eliminar favorito:');
+    throw error;
   }
 };

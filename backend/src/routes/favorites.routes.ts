@@ -1,9 +1,12 @@
 import express from 'express';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import { addFavoriteRestaurantController, removeFavoriteRestaurantController } from '../controllers/favorite.controller';
+import { addFavoriteRestaurantController, getUserFavoritesController, removeFavoriteRestaurantController } from '../controllers/favorite.controller';
 
 
 const router = express.Router();
+
+
+router.get("/", authMiddleware, getUserFavoritesController);
 
 // *Ruta para agregar restaurante a favoritos
 router.post('/', authMiddleware,addFavoriteRestaurantController);

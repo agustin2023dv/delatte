@@ -1,8 +1,28 @@
 import { Request, Response } from "express";
 import {
   addFavoriteRestaurantService,
+  getUserFavoritesService,
   removeFavoriteRestaurantService,
 } from "../services/favorite.service";
+
+
+// **Controlador para obtener favoritos del usuario**
+export const getUserFavoritesController = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const favorites = await getUserFavoritesService(userId);
+
+    return res.status(200).json({
+      favorites,
+    });
+  } catch (error) {
+    console.error("Error al obtener favoritos:", error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : "Error interno del servidor",
+    });
+  }
+};
 
 // **Controlador para agregar un restaurante a favoritos**
 export const addFavoriteRestaurantController = async (req: Request, res: Response) => {
@@ -19,7 +39,7 @@ export const addFavoriteRestaurantController = async (req: Request, res: Respons
   
       return res.status(200).json({
         message: 'Restaurante agregado a favoritos con éxito',
-        favorites: user.favoriteRestaurants,
+        favorites: user.favorites,
       });
     } catch (error) {
       console.error('Error en addFavoriteRestaurantController:', error);
@@ -44,7 +64,7 @@ export const addFavoriteRestaurantController = async (req: Request, res: Respons
   
       return res.status(200).json({
         message: 'Restaurante eliminado de favoritos con éxito',
-        favorites: user.favoriteRestaurants,
+        favorites: user.favorites,
       });
     } catch (error) {
       console.error('Error en removeFavoriteRestaurantController:', error);

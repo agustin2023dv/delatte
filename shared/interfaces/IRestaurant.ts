@@ -10,6 +10,7 @@ export interface IRestaurant extends Document {
   telefonos: string[]; // Lista de teléfonos de contacto
   emailContacto: string; // Email de contacto del restaurante
   logo: string; // URL de la imagen del logo
+  descripcion: string;
   galeriaFotos: string[]; // URLs de las imágenes de la galería
   calificacion: number; // Calificación del restaurante (1-5)
   horarios: { // Lista de horarios de apertura y cierre por día
