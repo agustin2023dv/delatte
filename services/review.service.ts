@@ -1,8 +1,13 @@
 import { getItem } from '../storage/storage'; 
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { IReview } from 'shared/interfaces/IReview';
 
-const API_URL = 'http://localhost:8081/api/reviews';
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Servicio para crear una review**
 export const createReviewService = async (reviewData: Partial<IReview>) => {

@@ -1,11 +1,10 @@
-import { useAuth } from 'contexts/AuthContext';
+
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 //**Componente de perfil del administrador**
 export default function AdminProfile() {
-  const {  logout } = useAuth(); // Obtener el usuario autenticado y la función de logout del contexto
 
   return (
     <SafeAreaView style={styles.container}>

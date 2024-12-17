@@ -1,18 +1,26 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
+import { getItem } from 'storage/storage';
 
-// Configuración de la instancia base de Axios
-const api = axios.create({
-  baseURL: 'http://localhost:8081/api/reservas',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // Obtener reservas del usuario autenticado
-export const fetchUserReservations = async () => {
+export const fetchUserReservations = async (role: string) => {
+  const token = await getItem("token");
   try {
-    const response = await api.get('/bookings');
-    return response.data; // Devuelve los datos obtenidos de la API
+    
+const response = await axios.get(`${API_URL}/reservas/bookings`, {
+  headers: {
+    Authorization: `Bearer ${token}`, 
+  },
+  params: { role }, 
+});
+    return response.data; 
   } catch (error) {
     console.error('Error al obtener las reservas del usuario:', error);
     throw error;
@@ -22,7 +30,8 @@ export const fetchUserReservations = async () => {
 // Crear una nueva reserva
 export const createReservation = async (reservationData: any) => {
   try {
-    const response = await api.post('/create-reservation', reservationData); // Enviar los datos de la reserva
+    const response = await axios.post(`${API_URL}/reservas/create-reservation'`,
+       reservationData); // Enviar los datos de la reserva
     return response.data;
   } catch (error) {
     console.error('Error al crear la reserva:', error);
@@ -33,7 +42,7 @@ export const createReservation = async (reservationData: any) => {
 // Cancelar una reserva
 export const cancelReservation = async (reservationId: string) => {
   try {
-    const response = await api.put(`/cancelar/${reservationId}`);
+    const response = await axios.put(`${API_URL}/reservas/cancelar/${reservationId}`);
     return response.data;
   } catch (error) {
     console.error('Error al cancelar la reserva:', error);
@@ -44,7 +53,7 @@ export const cancelReservation = async (reservationId: string) => {
 // Modificar una reserva
 export const modifyReservation = async (reservationId: string, updatedData: any) => {
   try {
-    const response = await api.put(`/modificar/${reservationId}`, updatedData);
+    const response = await axios.put(`${API_URL}/reservas/modificar/${reservationId}`, updatedData);
     return response.data;
   } catch (error) {
     console.error('Error al modificar la reserva:', error);
@@ -55,7 +64,7 @@ export const modifyReservation = async (reservationId: string, updatedData: any)
 // Obtener una reserva por ID
 export const getReservationById = async (reservationId: string) => {
   try {
-    const response = await api.get(`/${reservationId}`);
+    const response = await axios.get(`${API_URL}/reservas/${reservationId}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener la reserva por ID:', error);

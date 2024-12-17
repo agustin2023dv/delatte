@@ -1,8 +1,13 @@
 import { getItem } from 'storage/storage';
 import axios from 'axios'; 
+import { Platform } from 'react-native';
 
-const API_URL = 'http://localhost:8081/api/addresses';
-
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
+    
 // **Obtener las direcciones del usuario**
 export const getUserAddressesService = async () => {
   try {
@@ -11,7 +16,7 @@ export const getUserAddressesService = async () => {
       throw new Error('Token no encontrado. Por favor, inicia sesión nuevamente.');
     }
 
-    const response = await axios.get(API_URL, {
+    const response = await axios.get(`${API_URL}/addresses`, {
       headers: {
         Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
       },
@@ -36,7 +41,7 @@ export const addAddressService = async (newAddress: string) => {
     }
 
     const response = await axios.post(
-      API_URL,
+      `${API_URL}/addresses`,
       { address: newAddress }, // El cuerpo de la solicitud
       {
         headers: {
@@ -63,7 +68,7 @@ export const removeAddressService = async (address: string) => {
       throw new Error('Token no encontrado. Por favor, inicia sesión nuevamente.');
     }
 
-    const response = await axios.delete(API_URL, {
+    const response = await axios.delete(`${API_URL}/addresses`, {
       headers: {
         Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
       },

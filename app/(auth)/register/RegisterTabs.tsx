@@ -7,9 +7,9 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function RegisterTabs() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Cliente" component={CustomerRegister} />
-      <Tab.Screen name="Manager" component={ManagerRegister} />
+    <Tab.Navigator >
+      <Tab.Screen name="Cliente" component={CustomerRegister}  screenOptions={{ headerShown: false }}/>
+      <Tab.Screen name="Manager" component={ManagerRegister} screenOptions={{ headerShown: false }}/>
     </Tab.Navigator>
   );
 }

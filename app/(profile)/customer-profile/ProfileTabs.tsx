@@ -8,8 +8,9 @@ const Tab = createMaterialTopTabNavigator();
 export default function ProfileTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Mis Reservas" component={ReservationsTab} />
       <Tab.Screen name="Información de la cuenta" component={AccountSettings} />
+      <Tab.Screen name="Mis Reservas" component={ReservationsTab} />
+      
     </Tab.Navigator>
   );
 }

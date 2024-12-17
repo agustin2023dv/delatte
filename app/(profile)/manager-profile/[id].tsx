@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ProfileTabs from './ProfileTabs';
+import ProfileTabs from '.';
 
 //**Componente de perfil del Manager**
 export default function ManagerProfile() {

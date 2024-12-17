@@ -10,7 +10,13 @@ export default function HomeLayout() {
         <Stack.Screen name="VerifyEmail" options={{ title: "VerifyEmail" }} />
         <Stack.Screen name="forgotPassword/ForgotPassword" options={{ title: "ForgotPassword" }} />
         <Stack.Screen name="forgotPassword/ResetPassword" options={{ title: "ResetPassword" }} />
-        <Stack.Screen name="/home" options={{ title: "Home" }} />
+
+
+        <Stack.Screen name="admin-profile" options={{title:"Admin profile"}}/>
+        <Stack.Screen name="customer-profile" options={{title:"Customer profile"}}/>
+        <Stack.Screen name="manager-profile" options={{title:"Manager profile"}}/>
+
+        <Stack.Screen name="home" options={{ title: "Home" }} />
       </Stack>
     </AuthProvider>
   );

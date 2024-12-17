@@ -1,21 +1,24 @@
 import axios from 'axios';
-import { setItem } from 'storage/storage'; // Usar almacenamiento centralizado
-import {jwtDecode} from 'jwt-decode'; 
-const API_URL = 'http://localhost:8081/api/auth';
+import { setItem } from 'storage/storage'; 
+import { jwtDecode } from 'jwt-decode';
+import { Platform } from 'react-native';
+
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Servicio para iniciar sesión como Manager**
 export const loginManagerService = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/login-manager`, { email, password });
+    const response = await axios.post(`${API_URL}/auth/login-manager`, { email, password });
     const { token } = response.data;
 
-    // Decodificar el token para obtener la información del usuario
     const decodedUser = jwtDecode(token);
-    
-    // Guardar el token usando el módulo de almacenamiento centralizado
-    await setItem('token', token);
 
-    return { user: decodedUser, token }; // Retornar el usuario y el token
+    await setItem('token', token);
+    return { user: decodedUser, token };
   } catch (error: any) {
     handleError(error, 'Error al iniciar sesión como Manager');
   }
@@ -24,16 +27,13 @@ export const loginManagerService = async (email: string, password: string) => {
 // **Servicio para iniciar sesión como Customer**
 export const loginCustomerService = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/login-customer`, { email, password });
+    const response = await axios.post(`${API_URL}/auth/login-customer`, { email, password });
     const { token } = response.data;
 
-    // Decodificar el token para obtener la información del usuario
     const decodedUser = jwtDecode(token);
-    
-    // Guardar el token usando el módulo de almacenamiento centralizado
-    await setItem('token', token);
 
-    return { user: decodedUser, token }; // Retornar el usuario y el token
+    await setItem('token', token);
+    return { user: decodedUser, token };
   } catch (error: any) {
     handleError(error, 'Error al iniciar sesión como Customer');
   }

@@ -1,12 +1,17 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 
-const API_URL = 'http://localhost:8081/api/auth';
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 //**Función para registrar un nuevo usuario**
 export const registerUserService = async (nombre: string, apellido: string, email: string, password: string) => {
     try {
       // Enviar una solicitud POST al endpoint de registro de usuarios
-      const response = await axios.post(`${API_URL}/register`, {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         nombre,
         apellido,
         email,

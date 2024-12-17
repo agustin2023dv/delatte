@@ -26,7 +26,7 @@ export default function LoginManager() {
     try {
       setIsLoading(true);
       await loginManagerService(email, password); 
-      router.replace("./manager-profile/[id]");
+      router.replace("/manager-profile");
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión.');
     } finally {

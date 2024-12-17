@@ -22,16 +22,25 @@ export const createReservationController = async (req: Request, res: Response) =
 //* Controlador para ver las reservas del usuario (cliente o manager)
 export const getUserReservationsController = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user._id;
-    const role = (req as any).user.role;
+    const { userId, role } = req.query;
 
-    const reservations = await getReservationsByRoleService(userId, role);
-    res.status(200).json(reservations);
+    if (!userId || !role) {
+      return res.status(400).json({ message: "Faltan parámetros: userId y role" });
+    }
+
+    const result = await getReservationsByRoleService(userId as string, role as string);
+
+    // Verificar si result es un mensaje en lugar de reservas
+    if (result.message) {
+      return res.status(200).json({ message: result.message }); // Responder con un mensaje
+    }
+
+    return res.status(200).json(result); // Responder con las reservas
   } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo las reservas', error });
+    console.error("Error al obtener reservas:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
 //*Controlador para CANCELAR una reserva
 export const cancelReservationController = async (req: Request, res: Response) => {
   try {

@@ -27,8 +27,9 @@ export default function LoginCustomer() {
       setIsLoading(true);
       await loginCustomerService(email, password); // Llamada al método del contexto para iniciar sesión
 
-      router.replace("../customer-profile/[id]");
+      router.replace("/(profile)/customer-profile/ProfileTabs");
     } catch (err: any) {
+      console.log("error");
       setError(err.message || 'Error al iniciar sesión como Customer.');
     } finally {
       setIsLoading(false);

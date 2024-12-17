@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 const corsOptions = {
-  origin: 'http://localhost:8082', // Permitir solicitudes desde el frontend
+  origin: ['http://localhost:8082', 'http://192.168.1.24:8082'], // Permitir solicitudes desde el frontend
   methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
   credentials: true, 
 };

@@ -1,13 +1,18 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { getItem } from 'storage/storage';
 
-const API_URL = 'http://localhost:8081/api/auth';
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Servicio para solicitar restablecimiento de contraseña**
 export const requestPasswordResetService = async (email: string): Promise<void> => {
   try {
     // Enviar una solicitud POST al backend para solicitar el enlace de restablecimiento
-    const response = await axios.post(`${API_URL}/request-password-reset`, { email });
+    const response = await axios.post(`${API_URL}/auth/request-password-reset`, { email });
 
     console.log('Enlace de restablecimiento enviado:', response.data.message);
   } catch (error: any) {
@@ -29,7 +34,7 @@ export const resetPasswordService = async (
 ): Promise<void> => {
   try {
     const response = await axios.post(
-      `${API_URL}/password-reset`,
+      `${API_URL}/auth/password-reset`,
       {
         token, // Enviar el token en el cuerpo
         userId,
@@ -86,7 +91,7 @@ export const changePasswordService = async (
 export const verifyEmail = async (emailToken: string): Promise<{ success: boolean; token?: string; message: string }> => {
   try {
     // Enviar una solicitud GET para verificar el token de email
-    const response = await axios.get(`${API_URL}/verify-email`, {
+    const response = await axios.get(`${API_URL}/auth/verify-email`, {
       params: { token: emailToken },
     });
     return response.data; // Retornar los datos de la respuesta

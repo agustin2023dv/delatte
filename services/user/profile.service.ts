@@ -1,8 +1,13 @@
 import { getItem } from 'storage/storage';
 import axios from 'axios';
 import { IUser } from 'shared/interfaces/IUser';
+import { Platform } from 'react-native';
 
-const API_URL = 'http://localhost:8081/api/profile';
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Función para obtener datos de usuario**
 export const fetchUserDataService = async () => {
@@ -14,7 +19,7 @@ export const fetchUserDataService = async () => {
     }
 
     // Realizar la solicitud con el token en el encabezado Authorization
-    const response = await axios.get(`${API_URL}/`, {
+    const response = await axios.get(`${API_URL}/profile`, {
       headers: {
         Authorization: `Bearer ${token}` // Agregar el token en el encabezado Authorization
       }
@@ -40,7 +45,7 @@ export const updateUserDataService = async (updatedData: Partial<IUser>) => {
     }
 
     // Realizar la solicitud con el token en el encabezado Authorization
-    const response = await axios.put(`${API_URL}/`, updatedData, {
+    const response = await axios.put(`${API_URL}/profile`, updatedData, {
       headers: {
         Authorization: `Bearer ${token}` // Agregar el token en el encabezado Authorization
       }

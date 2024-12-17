@@ -48,12 +48,24 @@ export const getAllReservationsService = async () => {
 
 // Servicio para obtener todas las reservas de un cliente o manager
 export const getReservationsByRoleService = async (userId: string, role: string) => {
+  let reservations;
+
   if (role === 'customer') {
-    // Si es cliente, obtener solo sus reservas
-    return await Reservation.find({ cliente: userId }).populate('restaurante', 'nombre direccion');
+    // Obtener reservas del cliente
+    reservations = await Reservation.find({ cliente: userId }).populate('restaurante', 'nombre direccion');
   } else if (role === 'manager') {
-    // Si es manager, obtener reservas del restaurante del manager
+    // Obtener reservas del restaurante del manager
     const restauranteId = await getRestauranteIdByManagerService(userId);
-    return await Reservation.find({ restaurante: restauranteId }).populate('cliente', 'nombre email');
+    reservations = await Reservation.find({ restaurante: restauranteId }).populate('cliente', 'nombre email');
+  } else {
+    throw new Error('Rol no válido.'); // Manejo de error para roles no válidos
   }
+
+  // Si no hay reservas, retornar un mensaje claro
+  if (!reservations || reservations.length === 0) {
+    return { message: 'No hay reservas disponibles.' };
+  }
+
+  // Retornar las reservas encontradas
+  return reservations;
 };

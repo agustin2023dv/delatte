@@ -1,9 +1,14 @@
 import { getItem } from 'storage/storage';
 import axios from 'axios';
 import { ObjectId } from 'mongoose';
+import { Platform } from 'react-native';
 
 
-const API_URL = 'http://localhost:8081/api/favorites';
+// Detectar entorno (web o mobile)
+const API_URL =
+  Platform.OS === 'web'
+    ? process.env.EXPO_PUBLIC_API_URL_WEB
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Servicio para agregar restaurante a favoritos**
 export const addFavoriteRestaurantService = async (restaurantId: ObjectId) => {
