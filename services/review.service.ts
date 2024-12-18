@@ -1,5 +1,5 @@
-import { getItem } from '../storage/storage'; 
 import axios from 'axios';
+import { getItem } from '../storage/storage'; 
 import { Platform } from 'react-native';
 import { IReview } from 'shared/interfaces/IReview';
 
@@ -10,26 +10,34 @@ const API_URL =
     : process.env.EXPO_PUBLIC_API_URL_MOBILE;
 
 // **Servicio para crear una review**
-export const createReviewService = async (reviewData: Partial<IReview>) => {
+export const createReviewService = async (reviewData: {
+  restaurante: string;
+  calificacion: number;
+  comentario: string;
+}) => {
   try {
-    const token = await getItem('token'); // Obtener el token desde almacenamiento centralizado
-    if (!token) {
-      throw new Error('No se encontró un token de autenticación');
+    // Validación del restaurante ID
+    if (!reviewData.restaurante || typeof reviewData.restaurante !== "string") {
+      throw new Error("ID del restaurante es inválido o no se proporcionó.");
     }
 
+    // Obtener token desde el almacenamiento
+    const token = await getItem("token");
+    if (!token) throw new Error("No se encontró un token de autenticación");
+
+    // Enviar solicitud al backend
     const response = await axios.post(
-      `${API_URL}/restaurants/${reviewData.restaurante}/reviews`,
+      `${API_URL}/reviews/create-review`,
       reviewData,
       {
-        headers: {
-          Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
-        },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
-    return response.data; // Retornar los datos de la respuesta
+    return response.data;
   } catch (error) {
-    console.error('Error al crear la review:', error);
-    throw new Error('Error al crear la review');
+    console.error("Error al crear la reseña:", error);
+    throw new Error("Error al crear la reseña");
   }
 };
+

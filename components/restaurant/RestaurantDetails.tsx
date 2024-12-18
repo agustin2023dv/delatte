@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, SafeAreaView, Text, StyleSheet, Image } from "react-native";
+import { View, SafeAreaView, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { getRestaurantByIdService } from "services/restaurant.service";
 import { IRestaurant } from "shared/interfaces/IRestaurant";
-import { FavoriteButton } from "components/buttons/FavoriteButton"; 
+import { FavoriteButton } from "components/buttons/FavoriteButton";
 import { ActivityIndicator } from "react-native-paper";
+import { CreateReview } from "components/reviews/CreateReviewComponent";
 
 export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
   const [restaurantInfo, setRestaurantInfo] = useState<Partial<IRestaurant> | null>(null);
@@ -20,7 +21,6 @@ export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
         setLoading(false);
       }
     }
-
     fetchRestaurantInfo();
   }, [restaurantId]);
 
@@ -35,32 +35,45 @@ export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {restaurantInfo && (
-        <View style={styles.card}>
-          {/* Imagen del restaurante */}
-          {restaurantInfo.logo && (
-            <Image
-              source={{ uri: restaurantInfo.logo }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          )}
+      <ScrollView>
+        {restaurantInfo && (
+          <View style={styles.card}>
+            {/* Imagen del restaurante */}
+            {restaurantInfo.logo && (
+              <Image
+                source={{ uri: restaurantInfo.logo }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            )}
 
-          {/* Información del restaurante */}
-          <Text style={styles.title}>{restaurantInfo.nombre}</Text>
-          <Text style={styles.subtitle}>{restaurantInfo.direccion}</Text>
+            {/* Información del restaurante */}
+            <Text style={styles.title}>{restaurantInfo.nombre}</Text>
+            <Text style={styles.subtitle}>{restaurantInfo.direccion}</Text>
 
-          {/* Descripción del restaurante */}
-          {restaurantInfo.descripcion && (
-            <Text style={styles.description}>{restaurantInfo.descripcion}</Text>
-          )}
+            {/* Descripción */}
+            {restaurantInfo.descripcion && (
+              <Text style={styles.description}>{restaurantInfo.descripcion}</Text>
+            )}
 
-          {/* Botón para agregar/eliminar de favoritos */}
-          <View style={styles.favoriteButtonContainer}>
-            <FavoriteButton restaurantId={restaurantId} />
+            {/* Botón para agregar/eliminar de favoritos */}
+            <View style={styles.favoriteButtonContainer}>
+              <FavoriteButton restaurantId={restaurantId} />
+            </View>
+
+            {/* Sección para escribir una reseña */}
+            <View style={styles.reviewSection}>
+              <Text style={styles.sectionTitle}>Escribir una Reseña</Text>
+              <CreateReview
+                restaurantId={restaurantId}
+                onReviewCreated={() => {
+                  alert("Reseña creada correctamente");
+                }}
+              />
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -113,5 +126,17 @@ const styles = StyleSheet.create({
   favoriteButtonContainer: {
     alignItems: "center",
     marginTop: 10,
+  },
+  reviewSection: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#f1f1f1",
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
