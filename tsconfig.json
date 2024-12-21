@@ -1,38 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "es2017"
-    ],
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "target": "es5", 
+    "lib": ["dom", "es2017"],
+    "typeRoots": ["./node_modules/@types"],
     "jsx": "react-native",
-    "moduleResolution": "node",
+    "moduleResolution": "node", 
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-    "baseUrl": "./",
+    "baseUrl": "./", 
     "paths": {
-      "shared/*": [
-        "shared/*"
-      ],
-      "@/app/*": [
-        "app/*"
-      ]
+      "@/app/*": ["app/*"],
+      "backend/*": ["backend/src/*"], 
+      "shared/*": ["shared/*"] 
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*", 
+    "backend/src/**/*", 
+    "shared/**/*", 
     "types.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules", ".vscode", "dist", "backend/node_modules"], 
   "extends": "expo/tsconfig.base"
 }
