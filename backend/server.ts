@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import express, { Request, Response, NextFunction } from 'express';
 import profileRoutes from './src/routes/profile.routes';
 import restaurantRoutes from './src/routes/restaurante.routes';
