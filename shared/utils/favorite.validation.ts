@@ -1,4 +1,5 @@
-import User from "backend/src/models/User.model";
+
+import User from "backend/models/User.model";
 import mongoose from "mongoose";
 
 

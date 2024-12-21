@@ -13,10 +13,8 @@ export const getUserFavoritesService = async (userId: string) => {
   return user.favoriteRestaurants; // Devuelve la lista de favoritos
 };
 
-// Servicio para agregar un restaurante a favoritos
 export const addFavoriteRestaurantService = async (userId: string, restaurantId: string) => {
   try {
-    // Validar que el restaurantId sea un ObjectId válido
     if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
       throw new Error('ID de restaurante no válido');
     }
@@ -26,7 +24,11 @@ export const addFavoriteRestaurantService = async (userId: string, restaurantId:
       throw new Error('Usuario no encontrado');
     }
 
-    // Agregar el restaurante a favoritos si no existe ya
+    // Asegurar que `favoriteRestaurants` no es undefined
+    if (!user.favoriteRestaurants) {
+      user.favoriteRestaurants = [];
+    }
+
     if (!user.favoriteRestaurants.includes(restaurantId as unknown as ObjectId)) {
       user.favoriteRestaurants.push(restaurantId as unknown as ObjectId);
       await user.save();
@@ -35,14 +37,17 @@ export const addFavoriteRestaurantService = async (userId: string, restaurantId:
     return { message: "Restaurante agregado a favoritos", favorites: user.favoriteRestaurants };
   } catch (error) {
     console.error("Error en addFavoriteRestaurantService:", error);
-    throw new Error(error.message);
+
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+
+    throw new Error("Error desconocido");
   }
 };
 
-// Servicio para eliminar un restaurante de favoritos
 export const removeFavoriteRestaurantService = async (userId: string, restaurantId: string) => {
   try {
-    // Validar que el restaurantId sea un ObjectId válido
     if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
       throw new Error('ID de restaurante no válido');
     }
@@ -52,7 +57,11 @@ export const removeFavoriteRestaurantService = async (userId: string, restaurant
       throw new Error('Usuario no encontrado');
     }
 
-    // Eliminar el restaurante de favoritos si existe
+    // Asegurar que `favoriteRestaurants` no es undefined
+    if (!user.favoriteRestaurants) {
+      user.favoriteRestaurants = [];
+    }
+
     if (user.favoriteRestaurants.includes(restaurantId as unknown as ObjectId)) {
       user.favoriteRestaurants = user.favoriteRestaurants.filter(
         (id) => id.toString() !== restaurantId
@@ -63,6 +72,11 @@ export const removeFavoriteRestaurantService = async (userId: string, restaurant
     return { message: "Restaurante eliminado de favoritos", favorites: user.favoriteRestaurants };
   } catch (error) {
     console.error("Error en removeFavoriteRestaurantService:", error);
-    throw new Error(error.message);
+
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+
+    throw new Error("Error desconocido");
   }
 };
