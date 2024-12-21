@@ -5,6 +5,7 @@ import { IRestaurant } from "shared/interfaces/IRestaurant";
 import { FavoriteButton } from "components/buttons/FavoriteButton";
 import { ActivityIndicator } from "react-native-paper";
 import { CreateReview } from "components/reviews/CreateReviewComponent";
+import { ReservationForm } from "components/reservations/ReservationFormComponent";
 
 export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
   const [restaurantInfo, setRestaurantInfo] = useState<Partial<IRestaurant> | null>(null);
@@ -71,6 +72,17 @@ export function RestaurantDetails({ restaurantId }: { restaurantId: string }) {
                 }}
               />
             </View>
+
+            {/* Formulario de reservas */}
+            <View style={styles.reservationSection}>
+              <Text style={styles.sectionTitle}>Reservar una Mesa</Text>
+              <ReservationForm
+                restaurantId={restaurantId}
+                onReservationCreated={() => {
+                  alert("Reserva creada correctamente");
+                }}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -131,6 +143,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
     backgroundColor: "#f1f1f1",
+    borderRadius: 10,
+  },
+  reservationSection: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#e6f7ff",
     borderRadius: 10,
   },
   sectionTitle: {

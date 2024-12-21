@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IReview } from "../../../shared/interfaces/IReview";
-import { Review } from "../models/Review.model";
 import Restaurant from "../models/Restaurant.model";
+import { Review } from "../models/Review.model";
 
 
 export const createReviewService = async (
