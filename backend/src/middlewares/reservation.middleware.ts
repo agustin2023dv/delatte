@@ -1,5 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
+import { validateDisponibilidad } from "../../../shared/utils/reservation.validation";
 
+
+export const checkDisponibilidadMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await validateDisponibilidad(req, res, next);
+  } catch (error) {
+    console.error("Error en el middleware de disponibilidad:", error);
+    res.status(500).json({ message: "Error validando la disponibilidad." });
+  }
+};
 export const validateReservationData = (req: Request, res: Response, next: NextFunction) => {
   const { dia, horario, numAdultos, numNinos } = req.body;
 
@@ -27,3 +41,5 @@ export const validateReservationData = (req: Request, res: Response, next: NextF
 
   next(); // Si todo está bien, continuar con el siguiente middleware o controlador
 };
+
+

@@ -7,55 +7,75 @@ import {
   cancelReservationService, 
   getReservationsByIdService
 } from '../services/reservation.service';
+import { IReservation } from '../../../shared/interfaces/IReservation';
 
 //* Controlador para CREAR una reserva
 export const createReservationController = async (req: Request, res: Response) => {
   try {
-    const reservationData = req.body;
+    const user = (req as any).user; 
+    if (!user) {
+      return res.status(401).json({ message: "Usuario no autenticado." });
+    }
+
+    const reservationData = {
+      ...req.body,
+      usuario: user._id,  
+    };
+
     const reservation = await createReservationService(reservationData);
-    res.status(201).json(reservation);
+    res.status(201).json({
+      message: "Reserva creada con éxito.",
+      reservation,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error creando la reserva', error });
+    console.error("Error creando la reserva:", error);
+    res.status(500).json({ message: "Error creando la reserva", error });
   }
 };
+
 
 //* Controlador para ver las reservas del usuario (cliente o manager)
 export const getUserReservationsController = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user; // Obtenemos el usuario autenticado desde el middleware
-
+    const user = (req as any).user; 
     if (!user) {
-      return res.status(401).json({ message: "No se encontró un usuario autenticado." });
+      return res.status(401).json({ message: "Usuario no autenticado." });
     }
 
-    // Llamada al servicio pasando user._id y user.role
     const result = await getReservationsByIdService(user._id.toString(), user.role);
 
-    // Verificar si result contiene un mensaje en lugar de reservas
-    if (result.message) {
-      return res.status(200).json({ message: result.message });
+    // Comprueba si el resultado es un array vacío
+    if (Array.isArray(result) && result.length === 0) {
+      return res.status(200).json({ message: "No hay reservas disponibles." });
     }
 
-    return res.status(200).json(result); // Retornar las reservas
+    // Retorna las reservas si no están vacías
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error al obtener reservas:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor", error });
   }
 };
+
+
 
 //*Controlador para CANCELAR una reserva
 export const cancelReservationController = async (req: Request, res: Response) => {
   try {
     const reservationId = req.params.id;
-    const reservation = await cancelReservationService(reservationId);
 
+    const reservation = await cancelReservationService(reservationId);
     if (!reservation) {
-      return res.status(404).json({ message: 'Reserva no encontrada' });
+      return res.status(404).json({ message: "Reserva no encontrada." });
     }
 
-    res.status(200).json({ message: 'Reserva cancelada con éxito' });
+    res.status(200).json({
+      message: "Reserva cancelada con éxito.",
+      reservation,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error cancelando la reserva', error });
+    console.error("Error cancelando la reserva:", error);
+    res.status(500).json({ message: "Error cancelando la reserva", error });
   }
 };
 
@@ -63,18 +83,23 @@ export const cancelReservationController = async (req: Request, res: Response) =
 export const updateReservationController = async (req: Request, res: Response) => {
   try {
     const reservationId = req.params.id;
-    const updateData = req.body;
-    const updatedReservation = await updateReservationService(reservationId, updateData);
+    const updateData: Partial<IReservation> = req.body; 
 
+    const updatedReservation = await updateReservationService(reservationId, updateData);
     if (!updatedReservation) {
-      return res.status(404).json({ message: 'Reserva no encontrada' });
+      return res.status(404).json({ message: "Reserva no encontrada." });
     }
 
-    res.status(200).json(updatedReservation);
+    res.status(200).json({
+      message: "Reserva actualizada con éxito.",
+      updatedReservation,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error modificando la reserva', error });
+    console.error("Error actualizando la reserva:", error);
+    res.status(500).json({ message: "Error actualizando la reserva", error });
   }
 };
+
 
 //*Controlador para TRAER TODAS las reservas
 export const getAllReservationsController = async (req: Request, res: Response) => {
@@ -82,22 +107,25 @@ export const getAllReservationsController = async (req: Request, res: Response) 
     const reservations = await getAllReservationsService();
     res.status(200).json(reservations);
   } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo todas las reservas', error });
+    console.error("Error obteniendo todas las reservas:", error);
+    res.status(500).json({ message: "Error obteniendo todas las reservas", error });
   }
 };
+
 
 //*Controlador para BUSCAR una reserva por ID
 export const getReservationByIdController = async (req: Request, res: Response) => {
   try {
     const reservationId = req.params.id;
-    const reservation = await getReservationByIdService(reservationId);
 
+    const reservation = await getReservationByIdService(reservationId);
     if (!reservation) {
-      return res.status(404).json({ message: 'Reserva no encontrada' });
+      return res.status(404).json({ message: "Reserva no encontrada." });
     }
 
     res.status(200).json(reservation);
   } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo la reserva', error });
+    console.error("Error obteniendo la reserva:", error);
+    res.status(500).json({ message: "Error obteniendo la reserva", error });
   }
 };

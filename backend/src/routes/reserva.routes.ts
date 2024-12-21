@@ -9,19 +9,21 @@ import {
 } from '../controllers/reserva.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
-import { validateReservationData } from '../middlewares/reservation.middleware'; 
+import { checkDisponibilidadMiddleware, validateReservationData } from '../middlewares/reservation.middleware'; 
+
 const router = express.Router();
 
-// Route para CREAR una reserva (solo clientes)
+// Crear una reserva (solo clientes)
 router.post(
   '/create-reservation',
-  authMiddleware, // Verificar que el usuario esté autenticado
-  roleMiddleware(['customer']), // Verificar que el rol sea 'customer'
-  validateReservationData, // Validar los datos de la reserva
-  createReservationController // Controlador que crea la reserva
+  authMiddleware, // Verificar autenticación
+  roleMiddleware(['customer']), // Solo clientes pueden crear
+  validateReservationData, // Validar datos básicos
+  checkDisponibilidadMiddleware, // Validar disponibilidad
+  createReservationController // Crear la reserva
 );
 
-// Route para ver reservas propias (clientes y managers)
+// Ver reservas propias (clientes y managers)
 router.get(
   '/bookings',
   authMiddleware,
@@ -29,23 +31,23 @@ router.get(
   getUserReservationsController
 );
 
-// Route para CANCELAR una reserva (pueden cancelar tanto el cliente como el manager)
+// Cancelar una reserva (clientes y managers)
 router.put(
   '/cancelar/:id',
   authMiddleware,
   cancelReservationController
 );
 
-// Route para MODIFICAR una reserva (clientes y managers pueden modificar las reservas)
+// Modificar una reserva (clientes y managers)
 router.put(
   '/modificar/:id',
   authMiddleware,
   roleMiddleware(['customer', 'manager']),
-  validateReservationData, // Validar los datos antes de modificar la reserva
+  validateReservationData, // Validar datos antes de actualizar
   updateReservationController
 );
 
-// Route para TRAER TODAS las reservas (solo superadmins)
+// Traer todas las reservas (solo superadmins)
 router.get(
   '/all-reservations',
   authMiddleware,
@@ -53,7 +55,7 @@ router.get(
   getAllReservationsController
 );
 
-// Route para BUSCAR una reserva por ID (clientes, managers y superadmins pueden buscar)
+// Buscar una reserva por ID (clientes, managers y superadmins)
 router.get(
   '/:id',
   authMiddleware,

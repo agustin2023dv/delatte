@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
-import { cancelReservation, fetchUserReservations, modifyReservation } from 'services/reservation.service';
+import { cancelReservationService, fetchUserReservationsService,
+   modifyReservationService } from 'services/reservation.service';
 import { IReservation } from 'shared/interfaces/IReservation';
-import { validateFecha, validateHorario, validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
+import { validateFecha, validateHorario, 
+  validateNumAdultos, validateNumNinos } from 'shared/utils/reservation.validation';
 
 const ReservationsTab = () => {
   const [futureReservations, setFutureReservations] = useState<IReservation[]>([]);
@@ -19,9 +21,8 @@ const ReservationsTab = () => {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const response = await fetchUserReservations();
+        const response = await fetchUserReservationsService();
   
-        // Verifica si la respuesta contiene un array de reservas
         const reservations: IReservation[] = Array.isArray(response) ? response : [];
   
         if (reservations.length === 0) {
@@ -31,14 +32,23 @@ const ReservationsTab = () => {
           return;
         }
   
-        // Filtrar las reservas (futuras y pasadas)
-        const future = reservations.filter((reservation) => !reservation.pasada);
-        const past = reservations.filter((reservation) => reservation.pasada);
+        const currentDate = new Date();
+  
+        // Filtrar reservas futuras y pasadas basadas en la fecha
+        const future = reservations.filter((reservation) => {
+          const reservationDate = new Date(reservation.fecha);
+          return reservationDate >= currentDate; // Futuras
+        });
+  
+        const past = reservations.filter((reservation) => {
+          const reservationDate = new Date(reservation.fecha);
+          return reservationDate < currentDate; // Pasadas
+        });
   
         setFutureReservations(future);
         setPastReservations(past);
       } catch (error) {
-        console.error("Error al obtener las reservas:", error);
+        console.error("Error al obtener reservas:", error);
         Alert.alert("Error", "No se pudieron cargar las reservas");
       } finally {
         setLoading(false);
@@ -52,7 +62,7 @@ const ReservationsTab = () => {
   // Función para cancelar una reserva
   const handleCancelReservation = async (reservationId: string) => {
     try {
-      await cancelReservation(reservationId);
+      await cancelReservationService(reservationId);
       Alert.alert('Cancelación exitosa', 'La reserva ha sido cancelada');
 
     } catch (error) {
@@ -64,33 +74,40 @@ const ReservationsTab = () => {
   // Función para modificar una reserva
   const handleModifyReservation = async (reservationId: string) => {
     try {
+      // Validaciones locales antes de enviar los datos
+      const fechaError = validateFecha(selectedDate.toISOString().split("T")[0]);
+      const horarioError = validateHorario(editingReservation.horario);
+      const adultosError = validateNumAdultos(editingReservation.numAdultos);
+      const ninosError = validateNumNinos(editingReservation.numNinos);
+  
+      if (fechaError || horarioError || adultosError || ninosError) {
+        Alert.alert(
+          "Error en la modificación",
+          `${fechaError || ""}\n${horarioError || ""}\n${adultosError || ""}\n${ninosError || ""}`.trim()
+        );
+
+        return;
+      }
+      if (!(selectedDate instanceof Date) || isNaN(selectedDate.getTime())) {
+        Alert.alert("Error", "La fecha seleccionada no es válida.");
+        return;
+      }
+      
       const updatedData = {
-        dia: selectedDate.toISOString().split('T')[0], // Convertir la fecha a formato 'YYYY-MM-DD'
+        fecha: selectedDate, 
         horario: editingReservation.horario,
         numAdultos: editingReservation.numAdultos,
         numNinos: editingReservation.numNinos,
       };
   
-      // Validaciones
-      const fechaError = validateFecha(updatedData.dia);
-      const horarioError = validateHorario(updatedData.horario);
-      const adultosError = validateNumAdultos(updatedData.numAdultos);
-      const ninosError = validateNumNinos(updatedData.numNinos);
+      // Enviar datos al servicio
+      await modifyReservationService(reservationId, updatedData);
   
-      // Si hay errores, muestra una alerta y detén el proceso
-      if (fechaError || horarioError || adultosError || ninosError) {
-        Alert.alert('Error en la reserva', `${fechaError || ''} ${horarioError || 
-          ''} ${adultosError || ''} ${ninosError || ''}`);
-        return;
-      }
-  
-      // Si las validaciones pasan, procede con la modificación
-      await modifyReservation(reservationId, updatedData);
-      Alert.alert('Modificación exitosa', 'La reserva ha sido modificada');
-      setEditingReservation(null); // Finaliza la edición
+      Alert.alert("Éxito", "Reserva modificada correctamente.");
+      setEditingReservation(null); // Limpiar la edición
     } catch (error) {
-      console.error('Error al modificar la reserva:', error);
-      Alert.alert('Error', 'No se pudo modificar la reserva');
+      console.error("Error al modificar la reserva:", error);
+      Alert.alert("Error", "No se pudo modificar la reserva.");
     }
   };
 
@@ -149,7 +166,7 @@ const ReservationsTab = () => {
           <Text>{`Cantidad niños: ${item.numNinos}`}</Text>
 
           {/* Mostrar botones de "Modificar" y "Cancelar" solo si la reserva es futura */}
-          {!item.pasada && (
+          {item.estado === "Confirmada" && new Date(item.fecha) >= new Date() && (
             <>
               <Button title="Modificar" onPress={() => handleEditReservation(item)} />
               <Button title="Cancelar" onPress={() => handleCancelReservation(item._id)} />
@@ -171,6 +188,7 @@ const ReservationsTab = () => {
   return (
     <View style={styles.container}>
       <View style={isWeb ? styles.webContainer : styles.mobileContainer}>
+
         <View style={styles.reservationColumn}>
           <Text style={styles.title}>Reservas Futuras</Text>
           <FlatList
@@ -179,6 +197,7 @@ const ReservationsTab = () => {
             ListEmptyComponent={<Text>No tienes reservas futuras.</Text>}
           />
         </View>
+
         <View style={styles.reservationColumn}>
           <Text style={styles.title}>Reservas Pasadas</Text>
           <FlatList
@@ -187,6 +206,8 @@ const ReservationsTab = () => {
             ListEmptyComponent={<Text>No tienes reservas pasadas.</Text>}
           />
         </View>
+
+
       </View>
     </View>
   );
