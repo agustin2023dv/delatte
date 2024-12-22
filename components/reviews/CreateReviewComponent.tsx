@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Alert, StyleSheet, Text } from "react-native";
-import { createReviewService } from "services/review.service";
+import { createReviewService } from "../../services/review.service";
 
 
 interface CreateReviewProps {

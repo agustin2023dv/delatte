@@ -1,7 +1,7 @@
-import { getItem } from 'storage/storage';
-import axios from 'axios'; 
-import { Platform } from 'react-native';
 
+import axios from 'axios';
+import { Platform } from 'react-native';
+import { getItem } from '../../storage/storage';
 // Detectar entorno (web o mobile)
 const API_URL =
   Platform.OS === 'web'

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getItem } from '../storage/storage'; 
 import { Platform } from 'react-native';
-import { IReview } from 'shared/interfaces/IReview';
+
 
 // Detectar entorno (web o mobile)
 const API_URL =
