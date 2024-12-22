@@ -7,7 +7,7 @@ const RestaurantSchema = new Schema<IRestaurant>({
   localidad: { type: String, default: 'Montevideo' },
   pais: { type: String, default: 'Uruguay' },
   codigoPostal: { type: String, required: true },
-  telefonos: [{ type: String, default: [] }],
+  telefono:{ type: String, default: 'No se agregó ningún teléfono' },
   emailContacto: { type: String, match: /.+\@.+\..+/ },
   logo: { type: String, default: 'Logo restaurante' },
   descripcion: {type:String, default: "No hay descripcion"},

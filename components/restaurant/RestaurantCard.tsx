@@ -1,30 +1,35 @@
 import React from "react";
-import { IRestaurant } from "shared/interfaces/IRestaurant";
 import { Card, Text } from "react-native-paper";
-import { Image } from "react-native";
-import { FavoriteButton } from "components/buttons/FavoriteButton";
+import { IRestaurant } from "../../shared/interfaces/IRestaurant";
+import { Button } from "react-native";
 
-type RestaurantCardProps = Partial<IRestaurant>;
+interface RestaurantCardProps {
+  restaurant: IRestaurant;
+  showEditButton?: boolean;
+  onEditPress?: (restaurant: IRestaurant) => void;
+  onDetailsPress?: (restaurant: IRestaurant) => void; 
+}
 
-export function RestaurantCard({
-  _id,
-  nombre,
-  direccion,
-  logo,
-}: RestaurantCardProps) {
+export const RestaurantCard: React.FC<RestaurantCardProps> = ({
+  restaurant,
+  showEditButton = false,
+  onEditPress,
+  onDetailsPress, // Recibir el nuevo prop
+}) => {
   return (
     <Card style={{ margin: 10 }}>
-      <Card.Title title={nombre} />
+      <Card.Title title={restaurant.nombre} />
       <Card.Content>
-        {/* Imagen del restaurante */}
-        <Image source={{ uri: logo }} style={{ height: 100, width: "100%" }} />
-        {/* Dirección */}
-        <Text>{direccion}</Text>
+        <Text>{`Dirección: ${restaurant.direccion}`}</Text>
       </Card.Content>
       <Card.Actions>
-        {/* Botón para favoritos */}
-        <FavoriteButton restaurantId={_id!.toString()} />
+        {showEditButton && onEditPress && (
+          <Button title="Editar" onPress={() => onEditPress(restaurant)} />
+        )}
+        {onDetailsPress && ( // Botón "Ver detalles"
+          <Button title="Ver detalles" onPress={() => onDetailsPress(restaurant)} />
+        )}
       </Card.Actions>
     </Card>
   );
-}
+};

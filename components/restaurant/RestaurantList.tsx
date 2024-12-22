@@ -1,46 +1,71 @@
-import React from "react";
-import { Text, StyleSheet, FlatList, View } from "react-native";
-import { IRestaurant } from "shared/interfaces/IRestaurant";
-import { RestaurantCard } from "components/restaurant/RestaurantCard";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import { IRestaurant } from "../../shared/interfaces/IRestaurant";
+import { RestaurantCard } from "./RestaurantCard";
+import { RestaurantDetails } from "./RestaurantDetails";
 
 interface RestaurantListProps {
-    restaurants: Partial<IRestaurant>[];
-    loading?: boolean;
+  restaurants: IRestaurant[];
+  isManagerView?: boolean;
+  onEditPress?: (restaurant: IRestaurant) => void;
 }
 
-export function RestaurantList({ restaurants, loading = false }: RestaurantListProps) {
-    if (loading) {
-        return <Text style={styles.loadingText}>Cargando restaurantes...</Text>;
-    }
-    if (!restaurants || restaurants.length === 0) {
-        return <Text style={styles.loadingText}>No se encontraron restaurantes.</Text>;
-    }
+const RestaurantsList: React.FC<RestaurantListProps> = ({
+  restaurants,
+  isManagerView = false,
+  onEditPress,
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
 
-    return (
-        <FlatList
-          data={restaurants}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <RestaurantCard {...item} />
-            </View>
-          )}
-          keyExtractor={(item, index) => item._id?.toString() || `restaurant-${index}`}
-          numColumns={4}
-          contentContainerStyle={styles.container}
+  const handleDetailsPress = (restaurant: IRestaurant) => {
+    setSelectedRestaurantId(restaurant._id?.toString() || null);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedRestaurantId(null);
+  };
+
+  return (
+    <View>
+      <FlatList
+        data={restaurants}
+        renderItem={({ item }) => (
+          <View style={styles.item}>
+            <RestaurantCard
+              restaurant={item}
+              showEditButton={isManagerView}
+              onEditPress={onEditPress}
+              onDetailsPress={handleDetailsPress}
+            />
+          </View>
+        )}
+        keyExtractor={(item) => item._id?.toString() || ""}
+        numColumns={2}
+        contentContainerStyle={styles.container}
+      />
+
+      {selectedRestaurantId && (
+        <RestaurantDetails
+          restaurantId={selectedRestaurantId}
+          visible={modalVisible}
+          onClose={handleCloseModal}
         />
-      );
-}
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 10,
-    },
-    item: {
-        flex: 1,
-        margin: 5,
-      },
-    loadingText: {
-        textAlign: "center",
-        marginTop: 20,
-    },
+  container: {
+    padding: 10,
+  },
+  item: {
+    flex: 1,
+    margin: 5,
+  },
 });
+
+export default RestaurantsList;
