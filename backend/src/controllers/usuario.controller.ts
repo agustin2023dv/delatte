@@ -19,7 +19,7 @@ export const registrarUsuarioController = async (req: Request, res: Response) =>
     const newUser = await registerUserService(nombre, apellido, email, hashedPassword);
 
     // Generar el link de verificación de email
-    const verificationLink = `http://localhost:8081/auth/verify-email?token=${newUser.emailToken}`;
+    const verificationLink = `http://localhost:8081/api/auth/verify-email?token=${newUser.emailToken}`;
 
     // Enviar el correo de verificación al usuario
     await sendEmailService({
@@ -73,7 +73,7 @@ export const verificarEmailController = async (req: Request, res: Response) => {
     const emailToken = req.query.token as string;
 
     if (!emailToken) {
-      return res.redirect(`http://localhost:8082/verify-email?status=error&message=Tokennoproporcionado`);
+      return res.redirect(`http://localhost:8082/(auth)/VerifyEmail?status=error&message=Tokennoproporcionado`);
     }
 
     // Buscar al usuario por el token de email
@@ -85,12 +85,12 @@ export const verificarEmailController = async (req: Request, res: Response) => {
       user.isVerified = true;
       await user.save();
 
-      return res.redirect(`http://localhost:8082/verify-email?status=success&message=emailverificado`);
+      return res.redirect(`http://localhost:8082/(auth)/VerifyEmail?status=success&message=emailverificado`);
     } else {
-      return res.redirect(`http://localhost:8082/verify-email?status=error&message=TokenInvalido`);
+      return res.redirect(`http://localhost:8082/(auth)/VerifyEmail?status=error&message=TokenInvalido`);
     }
   } catch (error) {
-    return res.redirect(`http://localhost:8082/verify-email?status=error&message=servererror`);
+    return res.redirect(`http://localhost:8082/(auth)/VerifyEmail?status=error&message=servererror`);
   }
 };
 

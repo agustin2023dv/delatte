@@ -1,7 +1,7 @@
 import { IRestaurant } from "../../../shared/interfaces/IRestaurant";
-import { findUserByEmailService} from "./user.service";
 import { getCoordinatesFromAddress } from "./distance-matrix.service";
 import Restaurant from "../models/Restaurant.model";
+
 
 //* Servicio para obtener el restaurante del manager
 export const getRestauranteIdByManagerService = async (managerId: string) => {
@@ -35,56 +35,43 @@ export const updateRestaurantService = async (id: string, newRestaurantData: Par
 
 //** Servicio para crear restaurante
 export const registerRestaurantService = async (restaurantData: Partial<IRestaurant>) => {
-  const email = restaurantData.emailContacto;
+  try {
+    const direccionCompleta = `${restaurantData.direccion}, Montevideo, ${restaurantData.codigoPostal || ''}, Uruguay`;
+    console.log(direccionCompleta);
 
-  if (email) {
-      const existingUser = await findUserByEmailService(email);
-      console.log(existingUser);
+    let latitude: number | undefined;
+    let longitude: number | undefined;
 
-      try {
-          const direccionCompleta = `${restaurantData.direccion}, Montevideo, ${restaurantData.codigoPostal || ''}, Uruguay`;
-          console.log(direccionCompleta);
-
-          let latitude: number | undefined;
-          let longitude: number | undefined;
-
-          try {
-              const coordenadas = await getCoordinatesFromAddress(direccionCompleta);
-              console.log(coordenadas);
-              if (coordenadas) {
-                  latitude = coordenadas.latitude;
-                  longitude = coordenadas.longitude;
-              } else {
-                  throw new Error("No se encontraron coordenadas para la dirección proporcionada.");
-              }
-          } catch (error) {
-              console.error('Error al obtener coordenadas:', error);
-              throw new Error('Restaurante no encontrado');
-          }
-
-          const newRestaurant = new Restaurant({
-              ...restaurantData,
-              nombre: restaurantData.nombre,
-              emailContacto: restaurantData.emailContacto,
-              direccion: restaurantData.direccion,
-              codigoPostal: restaurantData.codigoPostal,
-              latitud: latitude,
-              longitud: longitude,
-              managers: existingUser?.id
-          });
-
-          const savedRestaurant = await newRestaurant.save();
-          console.log('Restaurant guardado:', savedRestaurant);
-          return savedRestaurant;
-      } catch (error) {
-          console.error('Error al guardar el restaurant:', error);
-          throw error;
+    // Obtener coordenadas a partir de la dirección
+    try {
+      const coordenadas = await getCoordinatesFromAddress(direccionCompleta);
+      console.log(coordenadas);
+      if (coordenadas) {
+        latitude = coordenadas.latitude;
+        longitude = coordenadas.longitude;
+      } else {
+        throw new Error("No se encontraron coordenadas para la dirección proporcionada.");
       }
-  } else {
-      console.log("No existe usuario con ese correo");
+    } catch (error) {
+      console.error('Error al obtener coordenadas:', error);
+      throw new Error('Error al obtener coordenadas para el restaurante.');
+    }
+
+    // Crear el restaurante con el manager principal asignado
+    const newRestaurant = new Restaurant({
+      ...restaurantData,
+      latitud: latitude,
+      longitud: longitude,
+    });
+
+    const savedRestaurant = await newRestaurant.save();
+    console.log('Restaurant guardado:', savedRestaurant);
+    return savedRestaurant;
+  } catch (error) {
+    console.error('Error al guardar el restaurant:', error);
+    throw error;
   }
 };
-
 //*
 export const searchRestaurantsService = async (query: string) => {
   return Restaurant.find({ nombre: { $regex: query, $options: 'i' } })
@@ -98,13 +85,10 @@ export const searchRestaurantsService = async (query: string) => {
 
 // ** Servicio para obtener todos los detalles de un restaurante por ID
 export const getRestaurantDetailsService = async (restaurantId: string) => {
-  try {
-    const restaurant = await Restaurant.findById(restaurantId)
-      .populate('managers')
-      .populate('menuComida')
-      .populate('menuBebidas')
-      .populate('menuPostres');
 
+
+  try {
+    const restaurant = await Restaurant.findById(restaurantId);
     if (!restaurant) {
       throw new Error('Restaurante no encontrado');
     }
@@ -115,12 +99,87 @@ export const getRestaurantDetailsService = async (restaurantId: string) => {
   }
 };
 
+
 //*
 export const getRestaurantsByManagerIdService = async (managerId: string) => {
   try {
-    const restaurants = await Restaurant.find({ managers: managerId }).populate('managers'); // Esto buscará todos los restaurantes donde el manager está en el array de managers
+    const restaurants = await Restaurant.find({
+         managerPrincipal: managerId 
+    });
     return restaurants;
   } catch (error) {
     throw new Error('Error al obtener los restaurantes del manager');
+  }
+};
+
+
+
+// Obtener las fotos de la galería de un restaurante
+export const getGalleryPhotosService = async (restaurantId: string) => {
+  try {
+    const restaurant = await Restaurant.findById(restaurantId).select("galeriaFotos");
+    if (!restaurant) {
+      throw new Error("Restaurante no encontrado");
+    }
+    return restaurant.galeriaFotos;
+  } catch (error) {
+    throw new Error("Error al obtener las fotos de la galería");
+  }
+};
+
+// Agregar una foto a la galería de un restaurante
+export const addPhotoToGalleryService = async (restaurantId: string, photoUrl: string) => {
+  try {
+    const restaurant = await Restaurant.findByIdAndUpdate(
+      restaurantId,
+      { $push: { galeriaFotos: photoUrl } },
+      { new: true }
+    );
+
+    if (!restaurant) {
+      throw new Error("Restaurante no encontrado");
+    }
+
+    return restaurant.galeriaFotos;
+  } catch (error) {
+    throw new Error("Error al agregar la foto a la galería");
+  }
+};
+
+// Eliminar una foto de la galería de un restaurante
+export const removePhotoFromGalleryService = async (restaurantId: string, photoUrl: string) => {
+  try {
+    const restaurant = await Restaurant.findByIdAndUpdate(
+      restaurantId,
+      { $pull: { galeriaFotos: photoUrl } },
+      { new: true }
+    );
+    if (!restaurant) {
+      throw new Error("Restaurante no encontrado");
+    }
+    return restaurant.galeriaFotos;
+  } catch (error) {
+    throw new Error("Error al eliminar la foto de la galería");
+  }
+};
+
+
+// Servicio para verificar si el usuario es manager o co-manager de un restaurante
+export const checkUserRoleInRestaurantService = async (restaurantId: string, userId: string): Promise<boolean> => {
+  try {
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      throw new Error('Restaurante no encontrado');
+    }
+
+    // Verificar si el usuario es manager principal o co-manager
+    return (
+      restaurant.managerPrincipal?.toString() === userId ||
+      restaurant.coManagers.some((manager) => manager.toString() === userId)
+    );
+  } catch (error) {
+    console.error('Error en el servicio checkUserRoleInRestaurant:', error);
+    throw error;
   }
 };

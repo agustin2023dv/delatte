@@ -44,7 +44,7 @@ export const registerUserService = async (nombre: string, apellido: string, emai
     email,
     password: hashedPassword,
     emailToken: crypto.randomBytes(64).toString('hex'), // Generar un token único para la verificación del email
-    isVerified: false // Asegurarse de que el usuario no está verificado inicialmente
+    isVerified: false 
   });
   console.log('Guardando nuevo usuario:', newUser);
 
@@ -55,47 +55,50 @@ export const registerUserService = async (nombre: string, apellido: string, emai
     return savedUser; // Devolver el usuario guardado
   } catch (error) {
     console.error('Error al guardar el usuario:', error);
-    throw error; // Lanzar error si ocurre algún problema al guardar
+    throw error; 
   }
 };
 
 //* Servicio para crear MANAGER
-export const registerManagerService = async (managerData:Partial<IUser>) => {
-
-  if(managerData.email){
-  // Crear un nuevo usuario con el token de verificación de email
-  const newUserManager = new User({
-    ...managerData,
-    nombre: managerData.nombre,
-    apellido: managerData.apellido,
-    email: managerData.email,
-    password: managerData.password,
-    emailToken: crypto.randomBytes(64).toString("hex"), // Generar un token único para la verificación del email
-    role: 'manager'
-  });
-  console.log('Guardando nuevo usuario:', newUserManager);
-
+export const registerManagerService = async (managerData: Partial<IUser>) => {
   try {
+
+    if (!managerData.email || !managerData.nombre || !managerData.apellido || !managerData.password) {
+      throw new Error('Faltan campos obligatorios para registrar al manager');
+    };
+    // Crear un nuevo usuario con el token de verificación de email
+    const newUserManager = new User({
+      ...managerData,
+      email: managerData.email,
+      nombre: managerData.nombre,
+      apellido: managerData.apellido,
+      password: managerData.password,
+      emailToken: crypto.randomBytes(64).toString("hex"), 
+      role: 'manager',
+    });
+
+    console.log('Guardando nuevo usuario:', newUserManager);
+
     // Guardar el usuario en la base de datos
     const savedUser = await newUserManager.save();
-      // Generar el link de verificación de email
-      const verificationLink = `http://localhost:8081/api/users/verify-email?token=${newUserManager.emailToken}`;
 
-      // Enviar el correo de verificación al usuario
-      await sendEmailService({
-        to: managerData.email,
-        subject: 'Verifica tu email',
-        text: `Hola ${managerData.nombre},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace: ${verificationLink}`,
-        html: `<h1>Hola ${managerData.nombre}!</h1><p>Por favor verifica tu cuenta haciendo clic en el siguiente enlace:</p><a href="${verificationLink}">Verificar Email</a>`,
-      });
+    // Generar el link de verificación de email
+    const verificationLink = `http://localhost:8081/api/auth/verify-email?token=${newUserManager.emailToken}`;
+
+    // Enviar el correo de verificación al usuario
+    await sendEmailService({
+      to: managerData.email,
+      subject: 'Verifica tu email',
+      text: `Hola ${managerData.nombre},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace: ${verificationLink}`,
+      html: `<h1>Hola ${managerData.nombre}!</h1><p>Por favor verifica tu cuenta haciendo clic en el siguiente enlace:</p><a href="${verificationLink}">Verificar Email</a>`,
+    });
 
     console.log('Usuario guardado:', savedUser);
     return savedUser; // Devolver el usuario guardado
   } catch (error) {
     console.error('Error al guardar el usuario:', error);
-    throw error; // Lanzar error si ocurre algún problema al guardar
+    throw error;
   }
-}
 };
 
 //* Servicio para login de CUSTOMER
@@ -119,7 +122,9 @@ export const loginCustomerService = async (email: string, password: string) => {
   }
 
   // Generar token JWT si la autenticación es correcta
-  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user._id, role: user.role}, process.env.JWT_SECRET!,
+    { expiresIn: '48h' }
+  );
 
   return { token, user };
 };
@@ -145,11 +150,12 @@ export const loginManagerService = async (email: string, password: string) => {
   }
 
   // Generar token JWT si la autenticación es correcta
-  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user._id, role: user.role, emailp : user.email }, process.env.JWT_SECRET!, 
+    { expiresIn: '10h' }
+  );
 
   return { token, user };
 };
-
 //**Servicio para obtener los datos del usuario**
 export const getUserDataService = async (userId: string) => {
   try {

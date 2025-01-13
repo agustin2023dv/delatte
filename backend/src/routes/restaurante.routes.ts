@@ -2,13 +2,18 @@ import { Router } from 'express';
 import { registerRestaurantAndManagerController, getRestaurantByIdController, 
   updateRestaurantController, getRestaurantsByManagerIdController, 
   getAllRestaurantsController,
-  getSearchResultsController} 
+  getSearchResultsController,
+  removePhotoFromGalleryController,
+  addPhotoToGalleryController,
+  getGalleryPhotosController,
+  checkManagerRoleController} 
 from '../controllers/restaurante.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { roleMiddleware } from '../middlewares/role.middleware';
 import { managerOfRestaurantMiddleware } from '../middlewares/restaurant.middleware';
 import {  validateRestaurantUpdate } from '../../../shared/utils/restaurant.validation';
 import { getReviewsByRestaurantController } from '../controllers/resena.controller';
+import { uploadMiddleware } from 'backend/middlewares/upload.middleware';
 
 const router = Router();
 
@@ -30,7 +35,6 @@ router.post(
 //* Ruta para OBTENER la información de un restaurante (cualquier usuario autenticado puede acceder)
 router.get(
   '/:id', 
-  authMiddleware, 
   getRestaurantByIdController
 );
 
@@ -44,12 +48,33 @@ router.put(
 );
 
 //*Ruta para obtener los restaurantes gestionados por un manager
-router.get('/manager/:managerId', 
-  authMiddleware, 
-  roleMiddleware(['manager', 'superadmin']), 
+router.get('/manager/:emailContacto', 
   getRestaurantsByManagerIdController);
 
 //*Ruta para obtener las reviews del restaurante
   router.get('/:id/reviews', getReviewsByRestaurantController);
+
+
+//* Rutas relacionadas con la galería de fotos
+router.get("/:id/gallery", authMiddleware, getGalleryPhotosController);
+
+router.post(
+  "/:id/gallery",
+  authMiddleware,
+  managerOfRestaurantMiddleware, 
+  uploadMiddleware, // Middleware de multer para manejar la subida de archivos
+  addPhotoToGalleryController
+);
+
+router.delete(
+  "/:id/gallery",
+  authMiddleware,
+  managerOfRestaurantMiddleware, 
+  removePhotoFromGalleryController
+);
+
+router.get('/:restaurantId/is-manager', 
+  authMiddleware, 
+  checkManagerRoleController);
 
 export default router;

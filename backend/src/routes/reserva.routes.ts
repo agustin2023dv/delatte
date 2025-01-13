@@ -34,6 +34,7 @@ router.get(
 // Cancelar una reserva (clientes y managers)
 router.put(
   '/cancelar/:id',
+  roleMiddleware(['customer', 'manager']),
   authMiddleware,
   cancelReservationController
 );
@@ -42,7 +43,7 @@ router.put(
 router.put(
   '/modificar/:id',
   authMiddleware,
-  roleMiddleware(['customer', 'manager']),
+  
   validateReservationData, // Validar datos antes de actualizar
   updateReservationController
 );

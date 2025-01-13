@@ -2,16 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 
 export const roleMiddleware = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user; // Usuario ya autenticado por authMiddleware
-    
+    const user = (req as any).user;
+
     if (!user) {
-      return res.status(403).json({ message: 'Usuario no autenticado' }); // Retornar error si no hay usuario autenticado
+      console.error('Acceso denegado: Usuario no autenticado');
+      return res.status(403).json({ message: 'Usuario no autenticado' });
     }
 
     if (!roles.includes(user.role)) {
-      return res.status(403).json({ message: 'No tienes permisos para realizar esta acción' }); // Retornar error si el rol del usuario no está permitido
+      console.error(`Acceso denegado: Rol ${user.role} no tiene permisos para esta ruta`);
+      return res.status(403).json({ message: `Rol ${user.role} no autorizado` });
     }
 
-    next(); // Continuar con la siguiente función
+    console.log(`Acceso permitido: Usuario ${user.id} con rol ${user.role}`);
+    next();
   };
 };
+

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { createReviewService, getReviewsByRestaurantService, updateReviewService, deleteReviewService } from '../services/review.service';
+import { createReviewService, getReviewsByRestaurantService,
+   updateReviewService, deleteReviewService } from '../services/review.service';
 
 export const createReviewController = async (req: Request, res: Response) => {
   try {
