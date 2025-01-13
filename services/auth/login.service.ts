@@ -13,11 +13,13 @@ const API_URL =
 export const loginManagerService = async (email: string, password: string) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login-manager`, { email, password });
-    const { token } = response.data;
+    const { token,user} = response.data;
 
     const decodedUser = jwtDecode(token);
 
     await setItem('token', token);
+    await setItem("userRole", user.role);
+    await setItem("userEmail", user.email);
     return { user: decodedUser, token };
   } catch (error: any) {
     handleError(error, 'Error al iniciar sesión como Manager');
@@ -25,14 +27,17 @@ export const loginManagerService = async (email: string, password: string) => {
 };
 
 // **Servicio para iniciar sesión como Customer**
-export const loginCustomerService = async (email: string, password: string) => {
+export const loginCustomerService = async (emailp: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login-customer`, { email, password });
-    const { token } = response.data;
+    const response = await axios.post(`${API_URL}/auth/login-customer`, { emailp, password });
+    const { token, user} = response.data;
 
     const decodedUser = jwtDecode(token);
 
     await setItem('token', token);
+    await setItem("userRole", user.role);
+
+
     return { user: decodedUser, token };
   } catch (error: any) {
     handleError(error, 'Error al iniciar sesión como Customer');

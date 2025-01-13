@@ -1,54 +1,78 @@
+import { EmailOptions } from '../../../shared/interfaces/IEmailOptions';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { EmailOptions } from '../../../shared/interfaces/IEmailOptions';
+import { google } from 'googleapis';
 
 dotenv.config();
 
-export const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Usar STARTTLS en lugar de una conexión SSL directa
-  auth: {
-    user: 'agustin.fernandez02@davinci.edu.ar', // Usuario de autenticación para el servidor SMTP
-    pass: 'xvblqcgniocqztmz', // Contraseña de autenticación para el servidor SMTP
-  },
+// Configuración de OAuth2
+const OAuth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.REDIRECT_URI
+);
+
+
+OAuth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
+
+export const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+port: 587,
+secure: false,
+  auth: {
+    type: 'OAuth2',
+    user: process.env.SMTP_USER,
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+    accessToken: async () => {
+      try {
+        const { token } = await OAuth2Client.getAccessToken();
+        return token || '';
+      } catch (error) {
+        console.error('Error al obtener el token de acceso:', error);
+        throw new Error('Error al obtener el token de acceso');
+      }
+    },
+  },
+}as nodemailer.TransportOptions);
+
+
 // Verificar si la configuración del transporter es correcta
-transporter.verify(function (error, success) {
+transporter.verify((error, success) => {
   if (error) {
     console.error('Error al configurar el transporter de Nodemailer:', error);
   } else {
-    console.log('El transporter de Nodemailer está listo para enviar correos', success);
+    console.log('El transporter de Nodemailer está listo para enviar correos');
   }
 });
 
 export const sendEmailService = async (options: EmailOptions) => {
-  // Configurar los detalles del correo electrónico
   const mailOptions = {
-    from: options.from || `"Soporte" <${process.env.SMTP_USER}>`, // Usar el remitente proporcionado o el configurado por defecto
-    to: options.to, // Destinatario del correo
-    subject: options.subject, // Asunto del correo
-    text: options.text, // Cuerpo del correo en texto plano
-    html: options.html, // Cuerpo del correo en formato HTML
+    from: options.from || `"Soporte" <${process.env.SMTP_USER}>`,
+    to: options.to,
+    subject: options.subject,
+    text: options.text,
+    html: options.html,
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions); // Enviar el correo electrónico
+    const info = await transporter.sendMail(mailOptions);
     console.log('Correo enviado: %s', info.messageId);
-    return info; // Devolver información del correo enviado
+    return info;
   } catch (error) {
     console.error('Error al enviar correo:', error);
-    throw error; // Lanzar error si falla el envío del correo
+    throw error;
   }
 };
 
 export const sendVerificationEmailService = async (nombre: string, email: string, emailToken: string) => {
-  try {
-    // Generar el link de verificación de email
-    const verificationLink = `http://localhost:8081/api/users/verify-email?token=${emailToken}`;
+  const verificationLink = `http://localhost:8081/api/users/verify-email?token=${emailToken}`;
 
-    // Enviar el correo de verificación al usuario
+  try {
     await sendEmailService({
       to: email,
       subject: 'Verifica tu email',
@@ -60,4 +84,3 @@ export const sendVerificationEmailService = async (nombre: string, email: string
     throw new Error('Error al enviar el correo de verificación');
   }
 };
-
