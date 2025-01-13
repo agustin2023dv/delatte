@@ -9,6 +9,7 @@ import reviewRoutes from './src/routes/resena.routes';
 import authRoutes from './src/routes/auth.routes';
 import { connectDB } from './db';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT || 8081; // Usa un puerto dinámico si está disponible
@@ -39,6 +40,8 @@ app.use(cors(corsOptions)); // Habilitar CORS para aceptar solicitudes desde otr
 
 
 app.use(express.json()); // Permitir recibir solicitudes en formato JSON
+
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Definir las rutas
 app.use('/api/profile', profileRoutes);
