@@ -1,38 +1,45 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { RestaurantList } from 'components/restaurant/RestaurantList';
+
 import { IRestaurant } from 'shared/interfaces/IRestaurant';
 import { searchRestaurantsService } from 'services/restaurant.service';
+import RestaurantsList from 'components/restaurant/RestaurantList';
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [results, setResults] = React.useState<Partial<IRestaurant>[]>([]);
+  const [results, setResults] = React.useState<IRestaurant[]>([]); 
   const [loading, setLoading] = React.useState(false);
   const debounceTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
   const onChangeSearch = (query: string) => {
     setSearchQuery(query);
 
-    // Limpiar el temporizador previo si existe (debounce)
+
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
 
     // Configurar un nuevo temporizador (300ms debounce)
     debounceTimeout.current = setTimeout(async () => {
-      if (query.length > 0) { // Realizar la búsqueda solo si el usuario ha ingresado algo
+      if (query.length > 0) {
         setLoading(true);
         try {
           const searchResults = await searchRestaurantsService(query);
-          setResults(searchResults);
+
+          // Filtrar y asegurar que los resultados sean de tipo `IRestaurant`
+          const filteredResults = searchResults.filter(
+            (result: { _id: any; nombre: any; direccion: any; }): result is IRestaurant =>
+              !!result._id && !!result.nombre && !!result.direccion
+          );
+
+          setResults(filteredResults);
         } catch (error) {
           console.error('Error al realizar la búsqueda:', error);
         } finally {
           setLoading(false);
         }
       } else {
-        // Si el query está vacío, limpiar los resultados
         setResults([]);
       }
     }, 250);
@@ -45,7 +52,7 @@ const SearchBar = () => {
         onChangeText={onChangeSearch}
         value={searchQuery}
       />
-      <RestaurantList restaurants={results} loading={loading} />
+      <RestaurantsList restaurants={results}  />
     </View>
   );
 };
