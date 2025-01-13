@@ -7,7 +7,7 @@ export interface IRestaurant extends Document {
   pais: string; // País donde se encuentra el restaurante
   localidad: string; // Localidad donde se encuentra el restaurante
   codigoPostal: string; // Código postal
-  telefonos: string[]; // Lista de teléfonos de contacto
+  telefono: string; // Teléfono de contacto
   emailContacto: string; // Email de contacto del restaurante
   logo: string; // URL de la imagen del logo
   descripcion: string;

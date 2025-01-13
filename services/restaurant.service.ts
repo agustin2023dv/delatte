@@ -50,6 +50,7 @@ export const getAllRestaurantsService = async () => {
 
 // **Llamado para obtener información de un restaurante por ID**
 export const getRestaurantByIdService = async (restaurantId: string) => {
+
   try {
     const response = await axios.get(`${API_URL}/restaurantes/${restaurantId}`);
     return response.data;
@@ -65,7 +66,7 @@ export const updateRestaurantService = async (
   updateData: Partial<IRestaurant>
 ) => {
   try {
-    const token = await getItem('token'); // Usar almacenamiento centralizado
+    const token = await getItem('token'); 
     if (!token) {
       throw new Error('No se encontró un token de autenticación');
     }
@@ -83,22 +84,14 @@ export const updateRestaurantService = async (
 };
 
 // **Llamado para obtener restaurantes gestionados por un manager**
-export const getRestaurantsByManagerService = async (managerId: string) => {
+export const getRestaurantsByManagerIdService = async (managerId: string) => {
+  console.log("id: ",managerId);
   try {
-    const token = await getItem('token'); // Usar almacenamiento centralizado
-    if (!token) {
-      throw new Error('No se encontró un token de autenticación');
-    }
-
-    const response = await axios.get(`${API_URL}/restaurantes/manager/${managerId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+   
+    const response = await axios.get(`${API_URL}/restaurantes/manager/${managerId}`);
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching restaurants:', error);
     throw new Error('Error fetching restaurants');
   }
 };
@@ -124,5 +117,92 @@ export const searchRestaurantsService = async (query: string) => {
   } catch (error) {
     console.error('Error al buscar restaurantes:', error);
     throw new Error('Error al buscar restaurantes');
+  }
+};
+
+// **Llamada para verificar si el usuario es manager o co-manager**
+export const isUserManagerService = async (restaurantId: string) => {
+  try {
+    const token = await getItem('token');
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    const response = await axios.get(`${API_URL}/restaurantes/${restaurantId}/is-manager`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+   console.log(response.data.isManager);
+    return response.data.isManager;
+  } catch (error) {
+    console.error('Error al verificar rol del usuario:', error);
+    throw new Error('Error al verificar rol del usuario');
+  }
+};
+
+
+
+export const addPhotoToGalleryService = async (restaurantId: string, photo: File | Blob) => {
+  try {
+    const token = await getItem('token'); // Usar almacenamiento centralizado
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    const formData = new FormData();
+    formData.append('photo', photo); // Enviar el archivo como parte de FormData
+
+    const response = await axios.post(
+      `${API_URL}/restaurantes/${restaurantId}/gallery`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data; // El backend retornará la galería actualizada
+  } catch (error) {
+    console.error('Error al agregar foto a la galería:', error);
+    throw new Error('No se pudo agregar la foto a la galería');
+  }
+};
+
+
+// **Servicio para eliminar una foto de la galería**
+export const deletePhotoFromGalleryService = async (restaurantId: string, photoUrl: string) => {
+  try {
+    const token = await getItem('token'); // Usar almacenamiento centralizado
+    if (!token) {
+      throw new Error('No se encontró un token de autenticación');
+    }
+
+    const response = await axios.delete(
+      `${API_URL}/restaurantes/${restaurantId}/gallery`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: { photoUrl },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar foto de la galería:', error);
+    throw new Error('No se pudo eliminar la foto de la galería');
+  }
+};
+
+// **Servicio para obtener todas las fotos de la galería**
+export const getGalleryPhotosService = async (restaurantId: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/restaurantes/${restaurantId}/gallery`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener fotos de la galería:', error);
+    throw new Error('Error al obtener fotos de la galería');
   }
 };
