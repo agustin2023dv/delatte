@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Text} from 'react-native';
 import ProfileTabs from './ProfileTabs';
-import { useAuth } from 'contexts/AuthContext';
 import { router } from 'expo-router';
+import { useAuth } from 'hooks/useAuth';
 
 
 

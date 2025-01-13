@@ -3,13 +3,13 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateEmail, validatePassword } from 'shared/utils/auth.validation';
 import { Link, router } from 'expo-router';
-import { useAuth } from 'contexts/AuthContext';
 import { loginCustomerService } from 'services/auth/login.service';
+import { useAuth } from 'hooks/useAuth';
 
 export default function LoginCustomer() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const auth = useAuth(); // Obtener el contexto completo
+  const auth = useAuth(); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

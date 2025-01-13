@@ -3,8 +3,8 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateEmail, validatePassword } from '../../../shared/utils/auth.validation';
 import { Link, router } from 'expo-router';
-import { useAuth } from 'contexts/AuthContext';
 import { loginManagerService } from 'services/auth/login.service';
+import { useAuth } from 'hooks/useAuth';
 
 export default function LoginManager() {
   const [email, setEmail] = useState('');

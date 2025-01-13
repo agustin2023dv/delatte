@@ -1,4 +1,5 @@
-import { useAuth } from 'contexts/AuthContext';
+
+import { useAuth } from 'hooks/useAuth';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, 
   Modal, TextInput, Button, ScrollView } from 'react-native';

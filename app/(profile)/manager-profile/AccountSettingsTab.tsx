@@ -3,11 +3,10 @@ import { View, Text, Image, TextInput, Button, StyleSheet, Alert, Platform } fro
 import { IUser } from 'shared/interfaces/IUser';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
-import { useAuth } from 'contexts/AuthContext';
 import { fetchUserDataService, updateUserDataService } from 'services/user/profile.service';
 
 export default function AccountSettings() {
-  const user = useAuth();
+
   const [managerData, setManagerData] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingPhone, setEditingPhone] = useState(''); 
