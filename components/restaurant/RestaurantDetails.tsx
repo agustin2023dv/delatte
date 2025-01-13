@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   View, Text, StyleSheet, Image, ScrollView, Modal, Button
 } from "react-native";
-import { getRestaurantByIdService } from "../../services/restaurant.service";
+import { getRestaurantByIdService, isUserManagerService } from "../../services/restaurant.service";
 import { IRestaurant } from "../../shared/interfaces/IRestaurant";
 import { FavoriteButton } from "../buttons/FavoriteButton";
 import { ActivityIndicator } from "react-native-paper";
 import { ReservationForm } from "../reservations/ReservationForm";
 import { CreateReview } from "../reviews/CreateReviewComponent";
+import { useUserRole } from "../../hooks/useUserRole";
 
 interface RestaurantDetailsProps {
   restaurantId: string;
@@ -22,6 +23,8 @@ export function RestaurantDetails({
 }: RestaurantDetailsProps) {
   const [restaurantInfo, setRestaurantInfo] = useState<Partial<IRestaurant> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isManager, setIsManager] = useState(false);
+  const { userRole, loadingRole } = useUserRole();
 
   useEffect(() => {
     let isMounted = true;
@@ -50,6 +53,21 @@ export function RestaurantDetails({
     };
   }, [restaurantId, visible]);
 
+  useEffect(() => {
+    async function checkManagerStatus() {
+      try {
+        if (restaurantId) {
+          const isManager = await isUserManagerService(restaurantId);
+          setIsManager(isManager); 
+        }
+      } catch (error) {
+        console.error("Error al verificar si el usuario es manager:", error);
+      }
+    }
+  
+    checkManagerStatus();
+  }, [restaurantId]);
+
   if (!visible) {
     return null;
   }
@@ -66,34 +84,57 @@ export function RestaurantDetails({
         ) : restaurantInfo ? (
           <ScrollView>
             <View style={styles.card}>
-              {/* ... (resto del código del modal) */}
-                {restaurantInfo.logo && (
-                    <Image
-                        source={{ uri: restaurantInfo.logo }}
-                        style={styles.image}
-                        resizeMode="cover"
-                    />
-                )}
-                <Text style={styles.title}>{restaurantInfo.nombre}</Text>
-                <Text style={styles.subtitle}>{restaurantInfo.direccion}</Text>
-                {restaurantInfo.descripcion && (
-                    <Text style={styles.description}>{restaurantInfo.descripcion}</Text>
-                )}
-                <View style={styles.favoriteButtonContainer}>
-                    <FavoriteButton restaurantId={restaurantId}/>
-                </View>
-                <View style={styles.reviewSection}>
-                    <Text style={styles.sectionTitle}>Escribir una Reseña</Text>
-                    <CreateReview restaurantId={restaurantId} onReviewCreated={() => {
-                        alert("Reseña creada correctamente")
-                    }}/>
-                </View>
-                <View style={styles.reservationSection}>
-                    <Text style={styles.sectionTitle}>Reservar una Mesa</Text>
-                    <ReservationForm restaurantId={restaurantId} onReservationCreated={() => {
-                        alert("Reserva creada correctamente")
-                    }}/>
-                </View>
+              {restaurantInfo.logo && (
+                <Image
+                  source={{ uri: restaurantInfo.logo }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              )}
+              <Text style={styles.title}>{restaurantInfo.nombre}</Text>
+              <Text style={styles.subtitle}>{restaurantInfo.direccion}</Text>
+              {restaurantInfo.descripcion && (
+                <Text style={styles.description}>{restaurantInfo.descripcion}</Text>
+              )}
+
+              {loadingRole ? (
+                <Text>Cargando rol del usuario...</Text>
+              ) : (
+                <>
+                  {userRole === "customer" && (
+                    <>
+                      <View style={styles.favoriteButtonContainer}>
+                        <FavoriteButton restaurantId={restaurantId} />
+                      </View>
+
+                      <View style={styles.reviewSection}>
+                        <Text style={styles.sectionTitle}>Escribir una Reseña</Text>
+                        <CreateReview
+                          restaurantId={restaurantId}
+                          onReviewCreated={() => alert("Reseña creada correctamente")}
+                        />
+                      </View>
+
+                      <View style={styles.reservationSection}>
+                        <Text style={styles.sectionTitle}>Reservar una Mesa</Text>
+                        <ReservationForm
+                          restaurantId={restaurantId}
+                          onReservationCreated={() => alert("Reserva creada correctamente")}
+                        />
+                      </View>
+                    </>
+                  )}
+
+                  {isManager && (
+                    <View style={styles.editButtonContainer}>
+                      <Button
+                        title="Editar Restaurante"
+                        onPress={() => alert("Editar restaurante")}
+                      />
+                    </View>
+                  )}
+                </>
+              )}
             </View>
           </ScrollView>
         ) : (
@@ -170,5 +211,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
+  },
+  editButtonContainer: {
+    marginTop: 20,
+    alignItems: "center",
   },
 });

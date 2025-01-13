@@ -6,14 +6,11 @@ import { RestaurantDetails } from "./RestaurantDetails";
 
 interface RestaurantListProps {
   restaurants: IRestaurant[];
-  isManagerView?: boolean;
   onEditPress?: (restaurant: IRestaurant) => void;
 }
 
 const RestaurantsList: React.FC<RestaurantListProps> = ({
   restaurants,
-  isManagerView = false,
-  onEditPress,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
@@ -36,8 +33,6 @@ const RestaurantsList: React.FC<RestaurantListProps> = ({
           <View style={styles.item}>
             <RestaurantCard
               restaurant={item}
-              showEditButton={isManagerView}
-              onEditPress={onEditPress}
               onDetailsPress={handleDetailsPress}
             />
           </View>

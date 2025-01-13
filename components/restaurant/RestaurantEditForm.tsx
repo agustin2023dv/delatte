@@ -11,10 +11,11 @@ import {
 } from "react-native";
 import { IRestaurant } from "../../shared/interfaces/IRestaurant";
 import { updateRestaurantService } from "../../services/restaurant.service";
+import { ImageManager } from "./ImageManager"; 
 
 interface RestaurantEditFormProps {
   restaurant: IRestaurant;
-  visible: boolean; // Controla la visibilidad del modal
+  visible: boolean; 
   onUpdate: (updatedRestaurant: IRestaurant) => void;
   onClose: () => void; // Para cerrar el modal
 }
@@ -93,13 +94,25 @@ export function RestaurantEditForm({
           value={formData.direccion || ""}
           onChangeText={(value) => handleInputChange("direccion", value)}
         />
-        {/* Continúan los demás campos... */}
+
         <Button
           title={loading ? "Guardando..." : "Guardar Cambios"}
           onPress={handleUpdate}
           disabled={loading}
         />
         <Button title="Cancelar" color="red" onPress={onClose} />
+
+
+        <View style={styles.imageManagerContainer}>
+          <Text style={styles.imageManagerTitle}>Administrar Imágenes</Text>
+          <ImageManager
+            restaurantId={restaurant._id.toString()}
+            initialImages={restaurant.galeriaFotos || []}
+            onImagesUpdated={(updatedImages) => {
+              setFormData((prev) => ({ ...prev, galeriaFotos: updatedImages }));
+            }}
+          />
+        </View>
       </ScrollView>
     </Modal>
   );
@@ -113,6 +126,14 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
+    marginBottom: 10,
+  },
+  imageManagerContainer: {
+    marginTop: 20,
+  },
+  imageManagerTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
     marginBottom: 10,
   },
 });
