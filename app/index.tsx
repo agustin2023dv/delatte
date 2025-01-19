@@ -5,61 +5,36 @@ import { useAuth } from "hooks/useAuth";
 import { useFonts } from "expo-font";
 
 export default function Home() {
-  const [fontsLoaded] = useFonts({
-    "Montserrat-Regular": require("../assets/fonts/Montserrat-LightItalic.ttf"),
-    "Montserrat-Bold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
-  });
-
-  const [loading, setLoading] = useState(true);
   const user = useAuth();
 
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Cargando...</Text>
-      </View>
-    );
-  }
-
   if (user.isSigned) {
-    router.replace("/home"); 
+    router.replace("/home");
     return null;
-  } else {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Bienvenido a</Text>
-          {/* Logo de la página */}
-          <Image
-            source={require("../assets/images/logo.png")}
-            style={styles.logo}
-          />
-        </View>
-        <Text style={styles.subtitle}>Selecciona una opción para continuar</Text>
-
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/login")}>
-          <Text style={styles.buttonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/register")}>
-          <Text style={styles.buttonText}>Registrarse</Text>
-        </TouchableOpacity>
-      </View>
-    );
   }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Bienvenido a</Text>
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+        />
+      </View>
+      <Text style={styles.subtitle}>Selecciona una opción para continuar</Text>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push("/login")}>
+        <Text style={styles.buttonText}>Iniciar sesión</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push("/register")}>
+        <Text style={styles.buttonText}>Registrarse</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f7ebe1",
-  },
-  loadingText: {
-    fontSize: 20,
-    color: "#4f2a1d",
-  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -74,7 +49,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontFamily: "Montserrat-Bold", 
+    fontFamily: "Montserrat-Bold",
     color: "#271207",
     marginRight: 10,
   },
@@ -85,7 +60,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    fontFamily: "Montserrat-Regular", 
+    fontFamily: "Montserrat-Regular",
     color: "#271207",
     marginBottom: 20,
     textAlign: "center",
