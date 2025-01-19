@@ -12,7 +12,7 @@ import cors from 'cors';
 import path from 'path';
 
 const app = express();
-const port = process.env.PORT || 8083; // Usa un puerto dinámico si está disponible
+const port = process.env.PORT || 8081; // Usa un puerto dinámico si está disponible
 
 // Conectar a la base de datos
 connectDB();
