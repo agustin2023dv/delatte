@@ -12,7 +12,7 @@ import cors from 'cors';
 import path from 'path';
 
 const app = express();
-const port = process.env.PORT || 8081; // Usa un puerto dinámico si está disponible
+const port = process.env.PORT || 8083; // Usa un puerto dinámico si está disponible
 
 // Conectar a la base de datos
 connectDB();
@@ -34,6 +34,9 @@ const corsOptions = {
   credentials: true, 
 };
 
+app.get('/', (req: Request, res: Response) => {
+  res.send('Servidor funcionando correctamente.');
+});
 
 // Middlewares globales
 app.use(cors(corsOptions)); // Habilitar CORS para aceptar solicitudes desde otros dominios

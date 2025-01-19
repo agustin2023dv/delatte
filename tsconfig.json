@@ -18,12 +18,12 @@
     }
   },
   "include": [
-    "app/**/*", 
-    "backend/src/**/*", 
-    "shared/**/*", 
-    "types.d.ts",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+  "app/**/*", 
+  "backend/**/*", 
+  "shared/**/*", 
+  "types.d.ts",
+  ".expo/types/**/*.ts",
+  "expo-env.d.ts"
   ],
   "exclude": ["node_modules", ".vscode", "dist", "backend/node_modules"], 
   "extends": "expo/tsconfig.base"

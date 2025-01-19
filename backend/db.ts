@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Cargar las variables de entorno desde el archivo .env en la raíz del proyecto
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Configurar dotenv con el path correcto
+dotenv.config({ path: path.resolve(__dirname, '../backend/.env') });
+
+console.log('MONGODB_URI desde .env:', process.env.MONGODB_URI);
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 
