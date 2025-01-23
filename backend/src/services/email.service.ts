@@ -1,52 +1,32 @@
 import { EmailOptions } from '../../../shared/interfaces/IEmailOptions';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { google } from 'googleapis';
 
 dotenv.config();
 
-// Configuración de OAuth2
-const OAuth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.REDIRECT_URI
-);
+console.log('SMTP_HOST:', process.env.SMTP_HOST);
+console.log('SMTP_PORT:', process.env.SMTP_PORT);
+console.log('SMTP_USER:', process.env.SMTP_USER);
+console.log('SMTP_PASSWORD:', process.env.SMTP_PASSWORD);
 
 
-OAuth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
-
-
+// Configurar el transporter de Nodemailer con contraseña de aplicación
 export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-port: 587,
-secure: false,
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false, 
   auth: {
-    type: 'OAuth2',
     user: process.env.SMTP_USER,
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-    accessToken: async () => {
-      try {
-        const { token } = await OAuth2Client.getAccessToken();
-        return token || '';
-      } catch (error) {
-        console.error('Error al obtener el token de acceso:', error);
-        throw new Error('Error al obtener el token de acceso');
-      }
-    },
+    pass: process.env.SMTP_PASSWORD, // Contraseña de aplicación generada
   },
-}as nodemailer.TransportOptions);
-
+});
 
 // Verificar si la configuración del transporter es correcta
 transporter.verify((error, success) => {
   if (error) {
     console.error('Error al configurar el transporter de Nodemailer:', error);
   } else {
-    console.log('El transporter de Nodemailer está listo para enviar correos');
+    console.log('El transporter de Nodemailer está listo para enviar correos', success);
   }
 });
 
