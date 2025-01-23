@@ -37,7 +37,7 @@ export const updateRestaurantService = async (id: string, newRestaurantData: Par
 export const registerRestaurantService = async (restaurantData: Partial<IRestaurant>) => {
   try {
     const direccionCompleta = `${restaurantData.direccion}, Montevideo, ${restaurantData.codigoPostal || ''}, Uruguay`;
-    console.log(direccionCompleta);
+    console.log("Dirección completa:", direccionCompleta);
 
     let latitude: number | undefined;
     let longitude: number | undefined;
@@ -45,7 +45,7 @@ export const registerRestaurantService = async (restaurantData: Partial<IRestaur
     // Obtener coordenadas a partir de la dirección
     try {
       const coordenadas = await getCoordinatesFromAddress(direccionCompleta);
-      console.log(coordenadas);
+      console.log("Coordenadas obtenidas:", coordenadas);
       if (coordenadas) {
         latitude = coordenadas.latitude;
         longitude = coordenadas.longitude;
@@ -57,36 +57,27 @@ export const registerRestaurantService = async (restaurantData: Partial<IRestaur
       throw new Error('Error al obtener coordenadas para el restaurante.');
     }
 
-    // Crear el restaurante con el manager principal asignado
+    // Crear el restaurante con el manager principal asignado y ubicacion en formato GeoJSON
     const newRestaurant = new Restaurant({
       ...restaurantData,
-      latitud: latitude,
-      longitud: longitude,
+      ubicacion: {
+        type: "Point",
+        coordinates: [longitude!, latitude!], // [longitud, latitud] formato GeoJSON
+      },
     });
 
     const savedRestaurant = await newRestaurant.save();
-    console.log('Restaurant guardado:', savedRestaurant);
+    console.log('Restaurante guardado:', savedRestaurant);
     return savedRestaurant;
   } catch (error) {
-    console.error('Error al guardar el restaurant:', error);
+    console.error('Error al guardar el restaurante:', error);
     throw error;
   }
 };
-//*
-export const searchRestaurantsService = async (query: string) => {
-  return Restaurant.find({ nombre: { $regex: query, $options: 'i' } })
-    .catch(error => {
-      console.error('Error en la búsqueda:', error);
-      throw error;
-    });
-};
-
 
 
 // ** Servicio para obtener todos los detalles de un restaurante por ID
 export const getRestaurantDetailsService = async (restaurantId: string) => {
-
-
   try {
     const restaurant = await Restaurant.findById(restaurantId);
     if (!restaurant) {
@@ -101,10 +92,10 @@ export const getRestaurantDetailsService = async (restaurantId: string) => {
 
 
 //*
-export const getRestaurantsByManagerIdService = async (managerId: string) => {
+export const getRestaurantsByManagerIdService = async (id: string) => {
   try {
     const restaurants = await Restaurant.find({
-         managerPrincipal: managerId 
+         managerPrincipal: id
     });
     return restaurants;
   } catch (error) {

@@ -8,11 +8,11 @@ import {
   getRestaurantsByManagerIdService,
   registerRestaurantService,
   removePhotoFromGalleryService,
-  searchRestaurantsService,
   updateRestaurantService
 } from '../services/restaurant.service';
 import { registerManagerService } from '../services/user.service';
 import { hashPasswordService } from '../services/auth.service';
+import {  getPlacesNearbyService, getRestaurantByNameService } from 'backend/services/search.service';
 
 //* Controlador para crear un nuevo restaurante y manager
 export const registerRestaurantAndManagerController = async (req: Request, res: Response) => {
@@ -89,7 +89,7 @@ export const updateRestaurantController = async (req: Request, res: Response) =>
 //*Controlador para obtener restaurantes a cargo de un manager
 export const getRestaurantsByManagerIdController = async (req: Request, res: Response) => {
   try {
-    const restaurants = await getRestaurantsByManagerIdService(req.params.userId);
+    const restaurants = await getRestaurantsByManagerIdService(req.params.id);
     
     if (!restaurants) {
       return res.status(404).json({ message: 'No se encontraron restaurantes para este manager' });
@@ -130,7 +130,7 @@ export const getSearchResultsController = async (req: Request, res: Response) =>
           return res.status(400).json({ message: 'Parámetro de búsqueda no válido' });
       }
 
-      const results = await searchRestaurantsService(query);
+      const results = await getRestaurantByNameService(query);
       res.json(results);
   } catch (error) {
       console.error('Error en la búsqueda:', error);
@@ -186,3 +186,34 @@ export const removePhotoFromGalleryController = async (req: Request, res: Respon
     return res.status(500).json({ success: false, message: error });
   }
 };
+
+export const getNearbyRestaurantsController = async (req: Request, res: Response) => {
+
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng || !radius) {
+      return res.status(400).json({ message: "Faltan parámetros obligatorios (lat, lng, radius)." });
+    }
+
+    const latitude = parseFloat(lat as string);
+    const longitude = parseFloat(lng as string);
+    const searchRadius = parseInt(radius as string);
+
+    if (isNaN(latitude) || isNaN(longitude) || isNaN(searchRadius)) {
+      return res.status(400).json({ message: "Los parámetros (lat, lng, radius) deben ser números válidos." });
+    }
+
+    const nearbyRestaurants = await getPlacesNearbyService(latitude, longitude, searchRadius);
+ 
+    if (nearbyRestaurants.length === 0) {
+      return res.status(200).json({ message: "No se encontraron restaurantes cercanos." });
+    }
+
+    return res.status(200).json(nearbyRestaurants);
+  } catch (error) {
+    return res.status(500).json({ message: "XX", error });
+  }
+};
+
+

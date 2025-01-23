@@ -206,3 +206,18 @@ export const getGalleryPhotosService = async (restaurantId: string) => {
     throw new Error('Error al obtener fotos de la galería');
   }
 };
+
+
+export const getNearbyRestaurantsService = async (lat: number, lng: number, radius: number) => {
+
+  try {
+    const response = await axios.get(`${API_URL}/restaurantes/nearby/:lng/:lat/:radius`,{
+      params: {lng,lat,radius },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error FRONT", error);
+    throw error;
+  }
+};

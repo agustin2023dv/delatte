@@ -6,14 +6,15 @@ import { registerRestaurantAndManagerController, getRestaurantByIdController,
   removePhotoFromGalleryController,
   addPhotoToGalleryController,
   getGalleryPhotosController,
-  checkManagerRoleController} 
+  checkManagerRoleController,
+  getNearbyRestaurantsController} 
 from '../controllers/restaurante.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import { roleMiddleware } from '../middlewares/role.middleware';
 import { managerOfRestaurantMiddleware } from '../middlewares/restaurant.middleware';
 import {  validateRestaurantUpdate } from '../../../shared/utils/restaurant.validation';
 import { getReviewsByRestaurantController } from '../controllers/resena.controller';
 import { uploadMiddleware } from 'backend/middlewares/upload.middleware';
+import { validateLocationParams } from 'backend/middlewares/location.middleware';
 
 const router = Router();
 
@@ -48,7 +49,7 @@ router.put(
 );
 
 //*Ruta para obtener los restaurantes gestionados por un manager
-router.get('/manager/:emailContacto', 
+router.get('/manager/:id', 
   getRestaurantsByManagerIdController);
 
 //*Ruta para obtener las reviews del restaurante
@@ -76,5 +77,10 @@ router.delete(
 router.get('/:restaurantId/is-manager', 
   authMiddleware, 
   checkManagerRoleController);
+  
+// Ruta para obtener restaurantes cercanos
+router.get("/nearby/:lng/:lat/:radius", 
+  validateLocationParams, 
+  getNearbyRestaurantsController);
 
 export default router;

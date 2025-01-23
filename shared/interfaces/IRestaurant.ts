@@ -1,36 +1,38 @@
 import { Document, ObjectId } from 'mongoose';
 
 export interface IRestaurant extends Document {
-  _id: ObjectId | string; // ID del restaurante
-  nombre: string; // Nombre del restaurante
-  direccion: string; // Dirección del restaurante
-  pais: string; // País donde se encuentra el restaurante
-  localidad: string; // Localidad donde se encuentra el restaurante
-  codigoPostal: string; // Código postal
-  telefono: string; // Teléfono de contacto
-  emailContacto: string; // Email de contacto del restaurante
-  logo: string; // URL de la imagen del logo
+  _id: ObjectId | string;
+  nombre: string;
+  direccion: string;
+  pais: string;
+  localidad: string;
+  codigoPostal: string;
+  telefono: string;
+  emailContacto: string;
+  logo: string;
   descripcion: string;
-  galeriaFotos: string[]; // URLs de las imágenes de la galería
-  calificacion: number; // Calificación del restaurante (1-5)
-  horarios: { // Lista de horarios de apertura y cierre por día
-    dia: 'Lunes' | 'Martes' | 'Miércoles' | 'Jueves' | 'Viernes' | 'Sábado' | 'Domingo'; // Día de la semana
-    horaApertura: string; // Hora de apertura
-    horaCierre: string; // Hora de cierre
+  galeriaFotos: string[];
+  calificacion: number;
+  horarios: {
+    dia: "Lunes" | "Martes" | "Miércoles" | "Jueves" | "Viernes" | "Sábado" | "Domingo";
+    horaApertura: string;
+    horaCierre: string;
   }[];
-  capacidadMesas: { // Capacidad del restaurante en términos de mesas y personas por mesa
-    cantidad: number; // Cantidad de mesas
-    personasPorMesa: number; // Número de personas por mesa
+  capacidadMesas: {
+    cantidad: number;
+    personasPorMesa: number;
   }[];
-  menus: { // Menús relacionados (unificados en un solo atributo)
-    tipo: 'Comida' | 'Bebidas' | 'Postres'; // Tipo de menú
-    menuId: ObjectId; // ID del menú relacionado
+  menus: {
+    tipo: "Comida" | "Bebidas" | "Postres";
+    menuId: ObjectId;
   }[];
-  managerPrincipal: ObjectId; // ID del manager principal
-  coManagers: ObjectId[]; // IDs de los co-managers del restaurante
-  estaAbierto: boolean; // Indica si el restaurante está operando
-  ultimaActualizacion: Date; // Fecha de la última actualización de datos
-  latitud: number; // Coordenada de latitud
-  longitud: number; // Coordenada de longitud
-  tags?: string[]; // Etiquetas opcionales para filtros avanzados
+  managerPrincipal: ObjectId;
+  coManagers: ObjectId[];
+  estaAbierto: boolean;
+  ultimaActualizacion: Date;
+  ubicacion: {
+    type: "Point";
+    coordinates: [number, number]; // [longitud, latitud]
+  };
+  tags?: string[];
 }

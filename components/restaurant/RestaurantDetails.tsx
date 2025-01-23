@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  View, Text, StyleSheet, Image, ScrollView, Modal, Button
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Modal,
+  Button,
 } from "react-native";
 import { getRestaurantByIdService, isUserManagerService } from "../../services/restaurant.service";
 import { IRestaurant } from "../../shared/interfaces/IRestaurant";
@@ -8,6 +14,7 @@ import { FavoriteButton } from "../buttons/FavoriteButton";
 import { ActivityIndicator } from "react-native-paper";
 import { ReservationForm } from "../reservations/ReservationForm";
 import { CreateReview } from "../reviews/CreateReviewComponent";
+import { RestaurantEditForm } from "./RestaurantEditForm"; // Importar el componente de edición
 import { useUserRole } from "../../hooks/useUserRole";
 
 interface RestaurantDetailsProps {
@@ -24,6 +31,7 @@ export function RestaurantDetails({
   const [restaurantInfo, setRestaurantInfo] = useState<Partial<IRestaurant> | null>(null);
   const [loading, setLoading] = useState(true);
   const [isManager, setIsManager] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false); // Estado para controlar la visibilidad del modal de edición
   const { userRole, loadingRole } = useUserRole();
 
   useEffect(() => {
@@ -58,13 +66,13 @@ export function RestaurantDetails({
       try {
         if (restaurantId) {
           const isManager = await isUserManagerService(restaurantId);
-          setIsManager(isManager); 
+          setIsManager(isManager);
         }
       } catch (error) {
         console.error("Error al verificar si el usuario es manager:", error);
       }
     }
-  
+
     checkManagerStatus();
   }, [restaurantId]);
 
@@ -129,7 +137,7 @@ export function RestaurantDetails({
                     <View style={styles.editButtonContainer}>
                       <Button
                         title="Editar Restaurante"
-                        onPress={() => alert("Editar restaurante")}
+                        onPress={() => setEditModalVisible(true)} // Abre el modal de edición
                       />
                     </View>
                   )}
@@ -141,6 +149,19 @@ export function RestaurantDetails({
           <Text>No se encontró información del restaurante.</Text>
         )}
       </View>
+
+      {/* Modal para editar el restaurante */}
+      {restaurantInfo && (
+        <RestaurantEditForm
+          restaurant={restaurantInfo as IRestaurant} // Elimina la posibilidad de `null`
+          visible={editModalVisible}
+          onUpdate={(updatedRestaurant) => {
+            setRestaurantInfo(updatedRestaurant); // Actualiza los datos después de la edición
+            alert("Restaurante actualizado correctamente");
+          }}
+          onClose={() => setEditModalVisible(false)} // Cierra el modal
+        />
+      )}
     </Modal>
   );
 }
