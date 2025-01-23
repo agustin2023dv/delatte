@@ -112,7 +112,8 @@ const SearchBar = () => {
       <Button title="Buscar cerca mío" onPress={onSearchNearby} disabled={loading} />
       
       {/* Mostrar mensaje si no hay resultados en un modal */}
-      <Modal visible={showNoResultsMessage} onDismiss={() => setShowNoResultsMessage(false)} contentContainerStyle={styles.modalContainer}>
+      <Modal visible={showNoResultsMessage} onDismiss={() => setShowNoResultsMessage(false)} 
+      contentContainerStyle={styles.modalContainer}>
         <Text style={styles.modalText}>Lo siento, no hay resultados para la búsqueda realizada.</Text>
         <Button title="Cerrar" onPress={() => setShowNoResultsMessage(false)} />
       </Modal>
