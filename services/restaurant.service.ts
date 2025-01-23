@@ -84,11 +84,11 @@ export const updateRestaurantService = async (
 };
 
 // **Llamado para obtener restaurantes gestionados por un manager**
-export const getRestaurantsByManagerIdService = async (managerId: string) => {
-  console.log("id: ",managerId);
+export const getRestaurantsByManagerIdService = async (id: string) => {
+  console.log("id: ",id);
   try {
    
-    const response = await axios.get(`${API_URL}/restaurantes/manager/${managerId}`);
+    const response = await axios.get(`${API_URL}/restaurantes/manager/${id}`);
 
     return response.data;
   } catch (error) {
