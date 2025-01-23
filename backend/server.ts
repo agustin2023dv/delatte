@@ -34,6 +34,9 @@ const corsOptions = {
   credentials: true, 
 };
 
+app.get('/', (req: Request, res: Response) => {
+  res.send('Servidor funcionando correctamente.');
+});
 
 // Middlewares globales
 app.use(cors(corsOptions)); // Habilitar CORS para aceptar solicitudes desde otros dominios

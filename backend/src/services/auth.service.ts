@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { findUserByEmailService } from './user.service';
 import Token from '../models/token.model';
 import crypto from 'crypto';

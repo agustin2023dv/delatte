@@ -1,44 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { validateEmail, validatePassword } from '../../../shared/utils/auth.validation';
-import { Link, router } from 'expo-router';
-import { loginManagerService } from 'services/auth/login.service';
-import { useAuth } from 'hooks/useAuth';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+  Alert,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { validateEmail, validatePassword } from "shared/utils/auth.validation";
+import { Link, router } from "expo-router";
+import { loginManagerService } from "services/auth/login.service";
 
 export default function LoginManager() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const auth = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
-    // Validar campos
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
-  
+
     if (emailError || passwordError) {
-      Alert.alert('Errores en el formulario', `${emailError || ''}\n${passwordError || ''}`);
+      Alert.alert(
+        "Errores en el formulario",
+        `${emailError || ""}\n${passwordError || ""}`
+      );
       return;
     }
-  
+
     try {
       setIsLoading(true);
-      await loginManagerService(email, password); 
+      await loginManagerService(email, password);
       router.replace("/manager-profile");
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión.');
+      setError(err.message || "Error al iniciar sesión.");
     } finally {
       setIsLoading(false);
     }
   };
 
-
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Iniciar Sesión como Manager</Text>
+        {/* Logo */}
+        <View style={styles.header}>
+           <Text style={styles.title}>Iniciar Sesión como Manager</Text>
+        </View>
+
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -54,29 +66,84 @@ export default function LoginManager() {
           secureTextEntry
         />
         {isLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#a5744b" />
         ) : (
-          <>
-            <Button title="Iniciar Sesión" onPress={handleLogin} />
-              <View style={styles.buttonSpacing}>
-                <Link href="../forgotPassword/ForgotPassword">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              
-              </View>
-          </>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          </TouchableOpacity>
         )}
         {error && <Text style={styles.errorText}>{error}</Text>}
+        <Link href="/forgotPassword/ForgotPassword" style={styles.link}>
+          ¿Olvidaste tu contraseña?
+        </Link>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 30, justifyContent: 'center' },
-  safeContainer: { flex: 1 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  input: { height: 40, borderColor: '#ccc', borderWidth: 1, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10 },
-  errorText: { color: 'red', textAlign: 'center', marginTop: 10 },
-  buttonSpacing: { marginTop: 10 },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#e7ded9",
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 30,
+    justifyContent: "center",
+    alignItems: "center", 
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontFamily: "Montserrat-Bold",
+    color: "#271207",
+    marginRight: 10,
+    padding: 20,
+  },
+  logo: {
+    width: 150, 
+    height: 60,
+    resizeMode: "contain",
+  },
+  input: {
+    width: "35%", 
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    fontFamily: "Montserrat-Regular",
+  },
+  button: {
+    width: "35%",
+    backgroundColor: "#a5744b",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontFamily: "Montserrat-Bold",
+    fontSize: 16,
+  },
+  errorText: {
+    color: "red",
+    fontFamily: "Montserrat-Regular",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  link: {
+    color: "#a5744b",
+    fontFamily: "Montserrat-Regular",
+    textAlign: "center",
+    marginTop: 15,
+  },
 });
