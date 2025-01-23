@@ -5,7 +5,8 @@ export default function HomeLayout() {
   return (
     <AuthProvider >
       <Stack screenOptions={{ headerShown: false }}>
+
       </Stack>
     </AuthProvider>
   );
-}
+} 

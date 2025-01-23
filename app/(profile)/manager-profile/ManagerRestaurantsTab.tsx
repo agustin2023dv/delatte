@@ -12,7 +12,7 @@ const ManagerRestaurantsTab: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true; // Bandera para controlar el desmontaje
+    let isMounted = true; 
   
     const fetchRestaurants = async () => {
       try {
