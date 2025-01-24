@@ -9,6 +9,7 @@ const API_URL =
 
 //**Función para registrar un nuevo usuario**
 export const registerUserService = async (nombre: string, apellido: string, email: string, password: string) => {
+  console.log('API_URL:', API_URL); 
     try {
       // Enviar una solicitud POST al endpoint de registro de usuarios
       const response = await axios.post(`${API_URL}/auth/register`, {
