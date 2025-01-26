@@ -24,7 +24,7 @@
   "types.d.ts",
   ".expo/types/**/*.ts",
   "expo-env.d.ts"
-  ],
+, "components/navbar"  ],
   "exclude": ["node_modules", ".vscode", "dist", "backend/node_modules"], 
   "extends": "expo/tsconfig.base"
 }

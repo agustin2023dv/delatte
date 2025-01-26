@@ -1,7 +1,8 @@
-import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "hooks/useAuth";
+import React from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+
 
 export default function NavBar() {
   const { logout } = useAuth();
@@ -17,7 +18,7 @@ export default function NavBar() {
       {/* Logo */}
       <TouchableOpacity onPress={() => router.replace("/home")}>
         <Image
-          source={require("../../../assets/images/logo.png")}
+          source={require("../../assets/images/logo.png")}
           style={styles.logo}
         />
       </TouchableOpacity>
