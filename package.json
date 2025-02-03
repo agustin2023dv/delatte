@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start:backend": "npx nodemon backend/src/server.ts",
+    "start:backend": "nodemon",
     "start:app": "expo start",
     "start": "concurrently \"npm run start:backend\" \"npm run start:app\"",
     "reset-project": "node ./scripts/reset-project.js",
@@ -26,6 +26,7 @@
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/native-stack": "^7.0.0",
     "@types/nodemailer": "^6.4.17",
+    "@types/sanitize-html": "^2.13.0",
     "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
     "date-fns": "^4.1.0",
@@ -71,7 +72,8 @@
     "react-native-ui-datepicker": "^2.0.4",
     "react-native-web": "~0.19.13",
     "react-router-dom": "^6.26.1",
-    "react-router-native": "^6.26.1"
+    "react-router-native": "^6.26.1",
+    "sanitize-html": "^2.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
